@@ -27,7 +27,7 @@ from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
 from .models import Company, Directors, Executives, Filing, Funds, Proxies
-from .utils import TOCAlternativeExtractor
+from .utils import TOCAlternativeExtractor, Printer
 
 
 def handler404(request, *args, **argv):
@@ -374,6 +374,7 @@ def SearchFilingView(request):
             'object_list': object_list,
             'extended_template': extended_template,
             'table_of_contents': t_o_c.body,
+            'fid': filing.id,
             'filing_html': filing_html
         }
     )
@@ -551,3 +552,14 @@ def PlanView(request):
         extended_template = 'base_member.html'
     return render(request, 'plan.html',{'extended_template': extended_template,
     })
+
+
+def PrinterView(request, fid, start):
+
+    filing = Filing.objects.get(id=fid)
+
+    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+
+    printer = Printer().generate(url, start)
+
+    return render(request, 'printer.html', {'html': printer})

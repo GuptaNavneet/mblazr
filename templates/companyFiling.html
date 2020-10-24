@@ -408,8 +408,6 @@ document.addEventListener('DOMContentLoaded',function(){
 
            </div>
         </form>
-
-
       <section id="filings-section-list" >
 
         <div>
@@ -417,7 +415,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <table class=" table-hover ">
               <div id="fixed-content-filing">
 
-               <div id="companyname" class="text-center center">{{ object_list.1.0 }}</div>
+              <div id="companyname" class="text-center center">{{ object_list.1.0 }}</div>
                   <div id="buttons-file-sec" >
                       <button id="myBtn1" class="btn btn-sm ">Funds</button>
                       <button id="myBtn2" class="btn btn-sm  ">Directors</button>
@@ -505,35 +503,61 @@ document.addEventListener('DOMContentLoaded',function(){
 {% endblock %}
 
 {% block script %}
-  <script src="{% static 'js/autocomplete.js' %}"></script>
+<script src="{% static 'js/autocomplete.js' %}"></script>
 
-  <script>
+<script>
     $("#table_filing a:not(.exhibit-link)").on('click', function(e) {
-      e.preventDefault()
-      let hash = this.hash
-      try {
-        document.querySelector(hash).scrollIntoView({behavior:'smooth'})
-      } catch (error) {
-        hash = hash.slice(1)
-        document.querySelector("[name='"+ hash +"']").scrollIntoView({behavior:'smooth'})
-      }
-  })
+        e.preventDefault()
+        let hash = this.hash
+        
+        try {
+            document.querySelector(hash).scrollIntoView({behavior:'smooth'})
+        } catch (error) {
+            hash = hash.slice(1)
+            document.querySelector("[name='"+ hash +"']").scrollIntoView({behavior:'smooth'})
+        }
+    })
 
-</script>
+    var fid = '{{ fid }}',
+        printerLink = "/printer/"+ fid +"/"
 
-<!--      Append the print button to TOC-->
-    <script>
-        document.addEventListener('DOMContentLoaded',function(){
-        let all_toc = document.querySelectorAll('.note-link')
+//Append the print button to TOC
 
-        all_toc.forEach((itm)=>{
-         itm.innerHTML =itm.innerHTML  + '<span class="print">print</span>'
-         itm.addEventListener('click',function(){
-              this.querySelector('.span')[0].style.display = 'block'
-         })
+    function addPrintButton(items, type){
+
+        items.forEach((itm) => {
+
+            itm.innerHTML = itm.innerHTML  + '<span class="print">print</span>'
+            
+            itm.addEventListener('mouseover',function(){
+                this.querySelector('span.print').style.display = 'inline-block'
+            })
+            
+            itm.addEventListener('mouseout',function(){
+                this.querySelector('span.print').style.display = 'none'
+            })
+
         })
-     /* Toogle between the sections*/
-     let fillinglist = document.querySelectorAll('.firstsec')[0]
+
+        $('.' + type + '-link span.print').on('click', function(e) {
+            let part = this.parentElement.hash.replace('#', '')
+            openPrintPortion(part)
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded',function(){
+
+        let partsInTOC = document.querySelectorAll('.part-link')
+        let itemsInToc = document.querySelectorAll('.item-link')
+        let notesInTOC = document.querySelectorAll('.note-link')
+
+        addPrintButton(partsInTOC, 'part');
+        addPrintButton(itemsInToc, 'item');
+        addPrintButton(notesInTOC, 'note');
+
+        /* Toogle between the sections*/
+
+        let fillinglist = document.querySelectorAll('.firstsec')[0]
         let doc_preview = document.querySelectorAll('.document-view-section')[0]
         let toc = document.querySelectorAll('.toc')[0]
 
@@ -544,76 +568,65 @@ document.addEventListener('DOMContentLoaded',function(){
 
  
         showfilings_btn.addEventListener('click',function(){
-          let shortcutsmobile =document.querySelector('#shortcuts-mobile')      
-          fillinglist.style.display = 'block'
-          doc_preview.style.display = 'none'
-          toc.style.display= 'none'
-          shortcutsmobile.style.display='none'
-
+            let shortcutsmobile =document.querySelector('#shortcuts-mobile')      
+            fillinglist.style.display = 'block'
+            doc_preview.style.display = 'none'
+            toc.style.display= 'none'
+            shortcutsmobile.style.display='none'
         })
+
         showdoc_btn.addEventListener('click',function(){
-          let shortcutsmobile = document.querySelector('#shortcuts-mobile')   
-          fillinglist.style.display = 'none'
-          doc_preview.style.display = 'block'
-          toc.style.display= 'none'
+            let shortcutsmobile = document.querySelector('#shortcuts-mobile')   
+            fillinglist.style.display = 'none'
+            doc_preview.style.display = 'block'
+            toc.style.display= 'none'
 
-          shortcutsmobile.style.display='block'
-
+            shortcutsmobile.style.display='block'
         })
         
         showtoc_btn.addEventListener('click',function(){
-          let shortcutsmobile = document.querySelector('#shortcuts-mobile')   
-          fillinglist.style.display = 'none'
-          doc_preview.style.display = 'none'
-          toc.style.display= 'block'
-          shortcutsmobile.style.display='none'
-
+            let shortcutsmobile = document.querySelector('#shortcuts-mobile')   
+            fillinglist.style.display = 'none'
+            doc_preview.style.display = 'none'
+            toc.style.display= 'block'
+            shortcutsmobile.style.display='none'
         })  
       
         $( ".section document-view-section div" ).eq(1).after('<div id="doc-head"></div>')
 
         //strip all unnecesary charaters in document
 
-       let ns = document.querySelectorAll('.document-view-section')[0]
-       ns.innerHTML.replace('\n','')
-       let ts=   document.querySelectorAll('.document-view-section')[0]
-       ts.innerHTML.replace('\t','')
+        let ns = document.querySelectorAll('.document-view-section')[0]
+        ns.innerHTML.replace('\n','')
+        let ts=   document.querySelectorAll('.document-view-section')[0]
+        ts.innerHTML.replace('\t','')
         let bs=  document.querySelectorAll('.document-view-section')[0]
         bs.innerHTML.replace("b'\'",'')
 
-        })
+    })
 
         //track which filing has been clicked on
 
-        let filingslinks = document.querySelectorAll('.filedate')
-        let filingvalue = window.location.href.split('&')[1].split('=')[1]
+    let filingslinks = document.querySelectorAll('.filedate')
+    let filingvalue = window.location.href.split('&')[1].split('=')[1]
 
-        if(filingvalue==='all'){
-  console.log("this is working")
-     let row =document.querySelector('#filings-section-list').querySelector('tbody').querySelectorAll('tr')[0]
-      row.style.backgroundColor='#f3e5d8';
-       }else{
-            filingslinks.forEach((filing)=>{
-            if(filing.outerHTML.search(filingvalue)>-1){
-
-
-               filing.setAttribute('style','background-color:#f3e5d8')
+    if (filingvalue==='all'){
+        console.log("this is working")
+        let row =document.querySelector('#filings-section-list').querySelector('tbody').querySelectorAll('tr')[0]
+        row.style.backgroundColor='#f3e5d8';
+    } else {
+        filingslinks.forEach((filing)=>{
+            if (filing.outerHTML.search(filingvalue) > -1) {
+                filing.setAttribute('style','background-color:#f3e5d8')
             }
-
-
-
-
         })
+    }
 
 
-        }
 
+function openPrintPortion(portion) {
+    var a = window.open(printerLink + portion, '_blank');
+}  
 
-        
-
-   
-
-      
-
-    </script>
+</script>
 {% endblock %}
