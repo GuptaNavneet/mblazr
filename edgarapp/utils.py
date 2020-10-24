@@ -107,12 +107,12 @@ class TOCAlternativeExtractor(object):
             if tag.name == 'a':
                 return False
 
-            if not tag.has_attr('style'):
+            if not tag.has_attr('style') and tag.name != 'b':
                 return False
 
             style_text = tag.get('style')
 
-            if not ('font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text ):
+            if tag.name != 'b' and not ('font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text):
                 return False
                         
             split_text = tag_text.split()
