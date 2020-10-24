@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from .views import (
     HomePageView, SearchResultsView, SearchFilingView, AboutView, FaqView, contactView, 
-    login_view, register_view, logout_view, account_view, HedgeFundView, PlanView
+    login_view, register_view, logout_view, account_view, HedgeFundView, PlanView, PrinterView
 )
 
 urlpatterns = [
@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^account/$', account_view, name = "account"),
     path('accounts/', include('django.contrib.auth.urls')),
     path('pricing/', PlanView, name='pricing'),
+    path('printer/<fid>/<start>/', PrinterView, name='printer'),
 
 ]

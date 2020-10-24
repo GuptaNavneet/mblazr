@@ -134,6 +134,12 @@ class TOCAlternativeExtractor(object):
 
         num_of_headings = len(list(headings))
 
+        tag_dict = {
+            'part': 1,
+            'item': 1,
+            'note': 1,
+        }
+
         headings_list = []
 
         for tag in headings:
@@ -141,7 +147,6 @@ class TOCAlternativeExtractor(object):
             tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '')
 
             tag_text_lower = tag_text.lower()
-
 
             split_text = tag_text_lower.split()
 
@@ -172,9 +177,11 @@ class TOCAlternativeExtractor(object):
                 
             tag_first_word = tag_text_lower.split()[0]
             tag_class = tag_first_word if tag_first_word != 'items' else 'item'
-            tag_id = tag_first_word + str(id_counter)
-
+            
+            tag_id = tag_class + str(tag_dict[tag_class])
             tag['id'] = tag_id
+
+            tag_dict[tag_class] += 1
 
             if tag_first_word == 'part':
                 tag_text = tag_text.upper()
@@ -194,7 +201,9 @@ class TOCAlternativeExtractor(object):
             if id_counter == num_of_headings and self.exhibit_end == -1:
                 tag['exhibits'] = 'true'            
             
-            new_soup += f"<a href='#{tag_id}' class='{tag_class}-link'>{tag_text}</a>"
+            tag['data-print-type'] = tag_class
+
+            new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
             
         
         self.html = str(modified_soup.body).replace('[[REMOVED_TABLE]]', default_table)
@@ -252,3 +261,35 @@ class TOCAlternativeExtractor(object):
 
         with open(self.url, 'w') as file:
             file.write(html)
+
+
+class Printer(object):
+
+    def generate(self, url, content_type):
+
+        with open(url) as file:
+            html = file.read()
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        res = soup.find(attrs={'id': content_type})
+
+        start_tag_str = str(res) 
+        
+        del soup
+        del res
+
+        start = html.find(start_tag_str)
+
+        html = html[start:]
+
+        end_word = re.sub('\d+', '', content_type)
+        end_word = end_word.lower()
+
+        html = html.replace(f'data-print-type="{end_word}"', '', 1)
+        
+        end = html.find(f'data-print-type="{end_word}"')
+
+        html = html[:end]
+
+        return html
