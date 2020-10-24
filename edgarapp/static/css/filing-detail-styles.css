@@ -112,13 +112,29 @@
         width:100vw;
         height: 100vh;
         min-width:100vw; /* Full height */
-        overflow:scroll; /* Enable scroll if needed */
+       /* overflow:scroll; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
         background-color: #b9d3ee; /* Black w/ opacity */
    
     }
+ .modal-content{
 
 
+    max-width:96vw;
+    overflow-y:scroll;
+    overflow:scroll;
+    margin-left:2%;
+    max-height:94vh;
+    margin-top:1%;
+    border:1px solid lightblue;
+  
+
+     }
+ .close{
+         font-weight:bolder;
+         padding:5px;
+
+     }
    .fl-table{
        width:98vw;
        min-width:98vw;
@@ -397,12 +413,29 @@
     }
     #report_table_cont{
         position:absolute;
-        background-color:#d9d9d9;
+
         width:100%;
         left:0%;
-         padding:0px;
+         padding:3px;
          margin:0px;
-        font-weight:bolder;
+            background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    line-height: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+     font-size:small!important;
+    }
+    .exhibit-header{
+          background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-size:small!important;
     }
     #filings-section-list{
       min-width: 105%;
@@ -546,7 +579,7 @@
  .toc{
 
       position:relative;
-     top:0.9vh;
+     top:1.6vh;
      left:0%;
      height:95vh;
       max-height:95vh;
