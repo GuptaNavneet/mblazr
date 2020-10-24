@@ -335,6 +335,7 @@
     padding: 01px 0px;
     line-height: 1.4;
     border-bottom:0.5px solid black;
+    position: relative;
 }
 
 #table_filing a:hover {
@@ -345,11 +346,10 @@
 #table_filing .item-link{
     padding-left: 15px;
     font-size:9pt;
-
-    }
+}
 .part-link{
      margin-top:10px;
-
+   
  }
  #table_filing .note-link{
         padding-left: 30px;
@@ -486,7 +486,7 @@
     .filedate:hover{
       background-color:#d8ecf3;
     }
-
+  
     #search-icon{
         font-size:1.8em;
         font-weight:bolder;
@@ -584,7 +584,7 @@
      height:95vh;
       max-height:95vh;
       overflow-y:scroll;
-     padding :0px;
+    padding :0px;
      margin-left :0px;
 
  }
@@ -592,6 +592,15 @@
   position:sticky;top:0px;
   background-color:white;
  }
-  #table_filing .print{
-  display:none;
-  }
+#table_filing .print{
+    display:none;
+    background-color: #2196f3;
+    padding: 0px 8px;
+    margin: 0 2px 0 0;
+    text-transform: capitalize;
+    border-radius: 4px;
+    color: white;
+    position: absolute;
+    right: 0;
+    bottom: 1px
+}
