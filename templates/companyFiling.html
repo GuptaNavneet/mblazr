@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
       <section class="col-md-3 section toc" id="3rd">
 
-        <h5 id="report_table_cont" style="font-weight:bolder;text-align:center">CONTENT</h5>
+        <div id="report_table_cont" >CONTENT</div>
         <div id="table_filing">
 
             {{ table_of_contents|safe }}
@@ -602,6 +602,8 @@ document.addEventListener('DOMContentLoaded',function(){
         ts.innerHTML.replace('\t','')
         let bs=  document.querySelectorAll('.document-view-section')[0]
         bs.innerHTML.replace("b'\'",'')
+        document.querySelectorAll('.document-view-section')[0].innerHTML.replace("'\'n",'')
+        document.querySelectorAll('.document-view-section')[0].innerHTML.replace("'\'n'\'",'')
 
     })
 
