@@ -343,7 +343,7 @@
     padding-left:10px;
 }
     #table_filing h3 {
-    color:black;
+
     font-size: 16px;
     text-align: center;
     padding: 5px 10px;
@@ -441,13 +441,27 @@
         color:white;
     }
     .exhibit-header{
-            background-color: #ddd;
+              background-color: #ddd;
     color: #444;
     text-align: center;
     height: 25px;
     vertical-align: middle;
     text-transform: uppercase;
+    font-size:9pt!important;
     }
+
+    .print-filing{
+     display:none;
+   background-color: #2196f3;
+    padding: 0px 8px;
+    margin: 0 2px 0 0;
+    text-transform: capitalize;
+    border-radius: 4px;
+    color: white;
+    position: relative;
+    right: -35%;
+    bottom: 1px;
+}
     #report_table_cont{
         position:absolute;
 
