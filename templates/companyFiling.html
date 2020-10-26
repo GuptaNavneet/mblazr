@@ -437,10 +437,10 @@ document.addEventListener('DOMContentLoaded',function(){
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.filingtype %}
                     <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}</td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span></td>
                   {% elif "10-K" in filing.filingtype %}
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    <td class="filedate p-0"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed  on {{ filing.filingdate }}  </td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed  on {{ filing.filingdate }} <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 <tr>
                   {% if "8-K" in filing.filingtype %}
                     <td class="info"><center>8-K</center></td>
-                    <td style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on {{ filing.filingdate }}</td>
+                    <td style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on {{ filing.filingdate }} <span onclick=" window.location.href='/printer/ + {{ filing.id }} + /'">print</span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -594,18 +594,11 @@ document.addEventListener('DOMContentLoaded',function(){
       
         $( ".section document-view-section div" ).eq(1).after('<div id="doc-head"></div>')
 
-        //strip all unnecesary charaters in document
 
-        let ns = document.querySelectorAll('.document-view-section')[0]
-        ns.innerHTML.replace('\n','')
-        let ts=   document.querySelectorAll('.document-view-section')[0]
-        ts.innerHTML.replace('\t','')
-        let bs=  document.querySelectorAll('.document-view-section')[0]
-        bs.innerHTML.replace("b'\'",'')
-        document.querySelectorAll('.document-view-section')[0].innerHTML.replace("'\'n",'')
-        document.querySelectorAll('.document-view-section')[0].innerHTML.replace("'\'n'\'",'')
 
-    })
+
+
+     })
 
         //track which filing has been clicked on
 
