@@ -23,12 +23,13 @@
     &nbsp;<div class="row" id="filing-quick-navbar-large">
 
         <div class="col-md-3 button1">mBlazr</div>
-         <div class="col-md-6  center-btn">{{ object_list.1.0 }} Earnings {{ object_list.3.filingdate }}
-        <span>
-         <a href="#part1">top</a>
-         <a href="#part2">bs</a>
-         <a href="">is</a>
-         <a href="">cf</a>
+         <div class="col-md-6  center-btn">
+             <span id="title">{{ object_list.1.0 }} Earnings {{ object_list.3.filingdate }}</span>
+        <span id="shortcts">
+
+            <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
+            <a href="#item1" title="Income Statement"><small>Income statement</small></a>
+            <a href="" title="Cash Flows"><small>Cash Flows</small></a>
           </span>
 
        </div>
@@ -51,10 +52,9 @@
           <div id="shortcuts-mobile" >
             <div id="company_name">{{ object_list.1.0 }}</div>
             <div id="short-mobile-links" >
-            <a href="#">top</a>
-            <a href="#">bs</a>
-            <a href="#">is</a>
-            <a href="#">cf</a>
+                 <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
+            <a href="#item1" title="Income Statement"><small>Income statement</small></a>
+            <a href="" title="Cash Flows"><small>Cash Flows</small></a>
             </div>
 
 
@@ -90,15 +90,15 @@
                 <div class = "table-wrapper">
                   <table class="fl-table" id="fund-table">
                     <thead>
-                      <th onclick="sortTable(0)">Fund</th>
-                      <th onclick="sortTable(1)">Number of Shares</th>
-                      <th onclick="sortTable(2)">Value($)</th>
-                      <th>Put or call</th>
+                      <th onclick="sortTable(0)">FUND</th>
+                      <th onclick="sortTable(1)">NUMBER OF SHARES</th>
+                      <th onclick="sortTable(2)">VALUE$)</th>
+                      <th>PUT OR CALL</th>
                     </thead>
                     <tbody class = "tbody">
                       {% for fund in object_list.4 %}
                         <tr id="tr_doc">
-                          <td id = "fund" class="success"><center>{{fund.fund}}</center></td>
+                          <td  class="success fund">{{fund.fund}}</td>
                           <td class = "fund-shares" style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0 }}&fid={{ filing.id }}';">{{fund.share_prn_amount}}
                           </td>
                           <td class="fund-value"><center>{{ fund.value }}</center></td>
