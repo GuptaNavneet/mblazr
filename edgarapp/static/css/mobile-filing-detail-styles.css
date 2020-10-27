@@ -24,6 +24,7 @@
        overflow:hidden;
         z-index:50;
          background-color:rgb(33, 150, 243);
+         overflow:hidden;
 
    }
 
@@ -36,7 +37,7 @@
         font-weight:bold;
         font-size:10pt;
 /*           border-right:1px solid #2d5986; */
-        width:32.70%;
+        width:32%;
         padding-left:0px;
         display:inline-block;
         overflow:hidden;
@@ -48,13 +49,10 @@
       border:none;
   }
 
-    .center-btn span{
-       float:right;
-    }
 
     .center-btn a{
      background-color:white;
-     padding:3px;
+     padding:0px;
      border-radius:4px;
      color:#3973ac;
      font-weight:normal;
@@ -129,7 +127,7 @@
     overflow-y:scroll;
     overflow:scroll;
     margin-left:1%;
-    max-height:87vh;
+    max-height:85vh;
     margin-top:2vh;
     border:1px solid lightblue;
 
@@ -619,39 +617,41 @@
     border-top:1px solid blue;;
 }
 #shortcuts-mobile div{
-    display:inline;
+    
     height:50px;
+  
 }
 #shortcuts-mobile  #company_name{
     position:absolute;
     color:white;
     font-size:10pt;
     min-width:100vw;
-    text-align:center;
+
     font-family:Tahoma,Geneva,sans-serif;
     font-size:10pt;
     margin:0px;
     font-weight:bold;
     display:block;
+    padding-left:15px;
 }
 #short-mobile-links {
     position:absolute;
-    right:5px;
+    right:0px;
     z-index:40;
 
 
 }
 #short-mobile-links a{
-    font-size:10pt;
+    font-size:7.5pt;
     color:#204060;
     font-weight:bold;
     margin-top:5px;
     background-color:white;
     padding:2px;
     border-radius:5px;
-
-
-
+}
+#short-mobile-links a:hover{
+    text-decoration:none;
 }
  .document-view-section{
 

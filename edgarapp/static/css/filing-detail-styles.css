@@ -43,17 +43,26 @@
     .button2{
         width:25%;
     } */
-    .center-btn span{
-       float:right;
+    .center-btn #shortcts{
+     float:right;
+     
     }
     .center-btn a{
      background-color:white;
-     padding:3px 3px;
+     padding:3px 1px;
      border-radius:4px;
      color:#3973ac;
      font-weight:normal;
+     font-size:9pt;
     }
-
+    .center-btn a:hover{
+        text-decoration:none;
+      
+    }
+.center-btn #title{
+ 
+    margin-left:15%;
+}
 
     .bs-example {
         font-family: sans-serif;
@@ -120,14 +129,26 @@
  .modal-content{
 
 
-    max-width:96vw;
-    overflow-y:scroll;
-    overflow:scroll;
-    margin-left:2%;
-    max-height:94vh;
-    margin-top:1%;
+    max-width:85vw;
+    margin-left:7.5vw;
+    max-height:90vh;
+    margin-top:2%;
     border:1px solid lightblue;
 
+
+     }
+     #myModal .modal-content{
+         overflow-y:scroll;
+         overflow-x:hidden;
+
+     }
+       #myModal2 .modal-content{
+         overflow-y:scroll;
+         overflow-x:scroll;
+
+     }
+      #myModal3 .modal-content{
+         overflow:hidden;
 
      }
  .close{
@@ -136,24 +157,25 @@
 
      }
    .fl-table{
-       width:98vw;
-       min-width:98vw;
-       max-width:98vw!important;
-       height:98vh;
+       width:100%;
+       min-width:100%;
+       max-width:100%important;
+       height:100vh;
        min-height:50vh;
 
    }
 
 
     .fl-table td, .fl-table th {
-        text-align: center;
         padding: 10px;
-
+        text-transform:capitalize;
+              
     }
 
     .fl-table td {
         border-right: 1px solid #f8f8f8;
         font-size: 12px;
+        text-transform:capitalize;
     }
 
     .fl-table thead th {
@@ -165,6 +187,10 @@
     .fl-table thead th:nth-child(odd) {
         color: #ffffff;
         background: #324960;
+    }
+     .fl-table thead th:first-child {
+         text-align:left;
+         
     }
 
     .fl-table tr:nth-child(even) {
@@ -189,8 +215,9 @@
         padding: 30px 0;
     }
     .table-wrapper-execs{
-        min-height:90vh;
-        height:90vh;
+       padding-bottom:50px;
+        width:98%;
+        margin-left:1%;
 
     }
     td div.comps {
@@ -467,6 +494,9 @@
     #tr_doc{
 
       font-size:small;
+     
+
+     
     }
     .filedate{
     text-align:left;
