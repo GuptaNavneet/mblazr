@@ -16,7 +16,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.mail import BadHeaderError, send_mail
 from django.db.models import Q
 # For contact View
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,HttpResponseNotFound
 # 404 error page
 from django.shortcuts import redirect, render
 from django.template import RequestContext
@@ -27,8 +27,8 @@ from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
 from .models import Company, Directors, Executives, Filing, Funds, Proxies
-from .utils import TOCAlternativeExtractor, Printer
 
+from .utils import TOCAlternativeExtractor, Printer
 
 def handler404(request, *args, **argv):
 
@@ -203,8 +203,13 @@ def SearchResultsView(request):
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
 
+
+
 @gzip_page
 def SearchFilingView(request):
+
+
+
     model = Company, Filing, Proxies
     template_name = 'companyFiling.html'
 
@@ -215,20 +220,30 @@ def SearchFilingView(request):
     matches = []
     exectable = []
 
-   
+
     query = request.GET.get('q')
-    fid = request.GET.get('fid')
-    mycompany = Company.objects.get(ticker=query)
+
+    # The company ticker Provided is vaild,Otherwise go to the First Company in list of Companies
+    try:
+      mycompany = Company.objects.get(ticker=query)
+    except:
+      mycompany = Company.objects.all()[0]
+
+    # Verify that the filing Id is an Integer and if not,show user the latest filings
+    try:
+     fid=int(request.GET.get('fid'))
+    except:
+     fid="all"
 
     #user is not logged in and
-    # they are not searching for Tesla
-    if not request.user.is_authenticated and query != 'TSLA' :
+
+    if not request.user.is_authenticated and query != 'TSLA' : # they are not searching for Tesla
      #redirect them to login
          return redirect('/accounts/login/?next='+query)
 
     elif request.user.is_authenticated or ( not request.user.is_authenticated and query == 'TSLA') :
         #user is authenticated or they are not authenticated but are searching for Tesla
-    #check if query sqtring has valid arguments
+      #check if query string has valid arguments
       if fid=='all':
         #query string fetches the latest filing
 
@@ -236,73 +251,44 @@ def SearchFilingView(request):
         filing = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate').latest('filingdate')
          # the latest filing is being recieved
 
-      else:
+      elif fid != None:
         #normal fid is in place
         filings = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate')
         filing = Filing.objects.get(id=fid)  # the filing was requested by fid
-      # page = open(url)
-        # finder = filing.filingpath.split('/')[1]+"#"
-        # soup = BeautifulSoup(page.read())
-      links = []
-      verify = []
-      # for link in soup.find_all('a'):
-      #   x = link.get('href')
-      #   if str(x).startswith('https') or str(x).startswith('http'):
-      #     if x.find('#') != -1:
-      #       if link.string.find('Table of Contents') == -1 or x.endswith("#INDEX") == -1:
-      #         # print(link.string.endswith("Index"))
-      #         if link.string.endswith("Index") == False:
-      #           # print('not present')
-      #           if x in verify:
-      #             for item in links:
-      #               if x.find(item["url"]) != -1:
-      #                 # print(link.string)
-      #                 itemIndex = links.index(item)
-      #                 # print("index", itemIndex)
-      #                 del links[itemIndex]
-        #                 store = {
-        #                   "value": item["value"] + " " + link.string,
-        #                   "url": item["url"]
-        #                 }
-        #                 links.append(store)
-        #           else:
-        #             # print('false')
-        #             verify.append(x)
-        #             store = {
-        #               "value": link.string,
-        #               "url": "#"+x.split('#')[1]
-        #             }
-        #             links.append(store)
+      else:
+        return HttpResponseNotFound(content="Filing Not Found")
 
 
-      name = mycompany.name
-      name = name.upper()
-      name = name.replace('INTERNATIONAL', 'INTL')
-      name = name.replace(' /DE', '')
-      name = name.replace('/DE', '')
-      name = name.replace('INC.', 'INC')
-      name = name.replace(',', '')
+    links = []
+    verify = []
+    name = mycompany.name
+    name = name.upper()
+    name = name.replace('INTERNATIONAL', 'INTL')
+    name = name.replace(' /DE', '')
+    name = name.replace('/DE', '')
+    name = name.replace('INC.', 'INC')
+    name = name.replace(',', '')
 
 
 
-      funds = Funds.objects.raw(
+    funds = Funds.objects.raw(
         'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
 
-      directors = Directors.objects.filter(
+    directors = Directors.objects.filter(
         company=mycompany.name).order_by('-director')
 
-      allDirectors = Directors.objects.all()
+    allDirectors = Directors.objects.all()
 
-      executives = Executives.objects.filter(company=mycompany.name)
+    executives = Executives.objects.filter(company=mycompany.name)
 
-      today = datetime.today()
-      currYear = today.year
+    today = datetime.today()
+    currYear = today.year
 
-      for year in executives:
+    for year in executives:
         if year.filingdate.split('-')[0] == str(currYear):
             exectable.append(year)
 
-      for person in directors:
+    for person in directors:
         if person:
             personA = person.director.replace("Mr.", '')
             personA = person.director.replace("Dr.", '')
@@ -342,6 +328,8 @@ def SearchFilingView(request):
              comps.append('Director is not on the board of any other companies')
         matches.append(comps)
 
+
+
     object_list = []
     object_list.append((query, fid))
     object_list.append((mycompany.name, mycompany.ticker))
@@ -351,24 +339,46 @@ def SearchFilingView(request):
     object_list.append(zip(directors, matches))
     object_list.append(zip(exectable, matches))
     object_list.append(links)
-    
-    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
 
+    #url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    url ="E:/Workspace/mblazr/edgarapp/static/Filings/fl/jcob.html"
+    #try:
     t_o_c = filing.table_of_contents.first()
-    
+
     if not t_o_c:
-      
-        toc_extractor = TOCAlternativeExtractor()
 
-        extract_data = toc_extractor.extract(url)
+            toc_extractor = TOCAlternativeExtractor()
 
-        t_o_c = filing.table_of_contents.create(body=extract_data.table)
+            extract_data = toc_extractor.extract(url)
 
+            t_o_c = filing.table_of_contents.create(body=extract_data.table)
 
-    with open(url) as file:
-        filing_html = file.read()
+    #except:
+        #Something Failed,We cant Output the TOC
+    #    t_o_c = "  "
+
+    try:
+      with open(url,encoding="utf-8",errors='ignore',newline=None) as file:
+        filing_html =file.read() #[line.rstrip('\n') for line in file]
+
+        filing_html=filing_html.replace("b'","")
+        filing_html = filing_html.replace('\\n',"")
+        filing_html = filing_html.replace('\n', "")
+        filing_html = filing_html.replace('\\t', "")
+        filing_html = filing_html.replace('\t', "")
+    except:
+        with open(url, encoding="latin-1", errors='ignore', newline=None) as file:
+            filing_html = file.read()  # [line.rstrip('\n') for line in file]
+
+            filing_html = filing_html.replace("b'", "")
+            filing_html = filing_html.replace('\\n', "")
+            filing_html = filing_html.replace('\n', "")
+            filing_html = filing_html.replace('\\t', "")
+            filing_html = filing_html.replace('\t', "")
 
     # object_list is ((q, fid), (companyname, name), (filings object), (filing))
+
+
     return render(
         request, template_name, {
             'object_list': object_list,
@@ -378,6 +388,7 @@ def SearchFilingView(request):
             'filing_html': filing_html
         }
     )
+
 
 
 
@@ -547,19 +558,26 @@ def logout_view(request):
 
 
 def PlanView(request):
-    extended_template = 'base.html'
-    if request.user.is_authenticated:
-        extended_template = 'base_member.html'
-    return render(request, 'plan.html',{'extended_template': extended_template,
-    })
-
+    return render(request, 'plan.html')
 
 def PrinterView(request, fid, start):
-
+    #check if filing is valid
+  try:
     filing = Filing.objects.get(id=fid)
+    #check if printer should print a section or entire file
 
     url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
-
-    printer = Printer().generate(url, start)
-
+    if start=='full':
+        printer = Printer().generate(url, 'Full')
+    else:
+        printer = Printer().generate(url, start)
     return render(request, 'printer.html', {'html': printer})
+
+
+  except:
+      return HttpResponseNotFound(content="Sorry but we cant find the Filing you are looking to print.")
+
+
+
+
+
