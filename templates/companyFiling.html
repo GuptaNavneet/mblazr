@@ -27,9 +27,9 @@
              <span id="title">{{ object_list.1.0 }} Earnings {{ object_list.3.filingdate }}</span>
         <span id="shortcts">
 
-            <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
-            <a href="#item1" title="Income Statement"><small>Income statement</small></a>
-            <a href="" title="Cash Flows"><small>Cash Flows</small></a>
+            <a href="#item1" title="Balance sheet"><small>Balance sheet</small></a>
+            <a href="#item2" title="Income Statement"><small>Income statement</small></a>
+            <a href="#item3" title="Cash Flows"><small>Cash Flows</small></a>
           </span>
 
        </div>
@@ -437,10 +437,10 @@ document.addEventListener('DOMContentLoaded',function(){
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.filingtype %}
                     <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span></td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}</span>  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full"> print</a></span></td>
                   {% elif "10-K" in filing.filingtype %}
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed  on {{ filing.filingdate }} <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span> </td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"> Filed  on {{ filing.filingdate }}</span> <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full"> print</a></span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
