@@ -340,8 +340,8 @@ def SearchFilingView(request):
     object_list.append(zip(exectable, matches))
     object_list.append(links)
 
-    #url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
-    url ="E:/Workspace/mblazr/edgarapp/static/Filings/fl/jcob.html"
+    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    #url ="E:/Workspace/mblazr/edgarapp/static/Filings/fl/jcob.html"
     #try:
     t_o_c = filing.table_of_contents.first()
 
