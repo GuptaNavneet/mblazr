@@ -15,9 +15,9 @@ class Company(models.Model):
 			models.UniqueConstraint(fields=['cik', 'name'], name='cik_name constraint')
 		]
 
-		# indexes = [
-		# 	models.Index(fields=['ticker'])
-		# ]
+		indexes = [
+			models.Index(fields=['ticker'])
+		]
 
 	def __str__(self):
 		return self.name
