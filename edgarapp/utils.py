@@ -25,7 +25,7 @@ class TOCAlternativeExtractor(object):
 
     def extract(self, url):
 
-        with open(url) as file:
+        with open(url,encoding="utf-8",errors="ignore",newline=None,mode='r') as file:
             html = file.read()
             self.html = html
         
@@ -267,29 +267,31 @@ class Printer(object):
 
     def generate(self, url, content_type):
 
-        with open(url) as file:
+        with open(url,encoding='utf-8',errors='ignore',newline=None,mode='r') as file:
             html = file.read()
+        if content_type == 'Full':
+            return html
+        else:
+            soup = BeautifulSoup(html, 'lxml')
 
-        soup = BeautifulSoup(html, 'lxml')
+            res = soup.find(attrs={'id': content_type})
 
-        res = soup.find(attrs={'id': content_type})
+            start_tag_str = str(res)
 
-        start_tag_str = str(res) 
-        
-        del soup
-        del res
+            del soup
+            del res
 
-        start = html.find(start_tag_str)
+            start = html.find(start_tag_str)
 
-        html = html[start:]
+            html = html[start:]
 
-        end_word = re.sub('\d+', '', content_type)
-        end_word = end_word.lower()
+            end_word = re.sub('\d+', '', content_type)
+            end_word = end_word.lower()
 
-        html = html.replace(f'data-print-type="{end_word}"', '', 1)
-        
-        end = html.find(f'data-print-type="{end_word}"')
+            html = html.replace(f'data-print-type="{end_word}"', '', 1)
 
-        html = html[:end]
+            end = html.find(f'data-print-type="{end_word}"')
 
-        return html
+            html = html[:end]
+
+            return html
