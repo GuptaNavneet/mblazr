@@ -36,10 +36,8 @@ def populate_funds():
 def populate_executives():
 
     for company in Company.objects.all():
-
-        name = company.name
         
-        Executives.objects.filter(company=nam, company_rep=None).update(company_rep=company)
+        Executives.objects.filter(company=company.name, company_rep=None).update(company_rep=company)
         
     
     print('Done with Exectuives')
