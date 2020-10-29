@@ -7,7 +7,7 @@ def populate_filings():
 
     for company in Company.objects.all():
 
-        Filing.objects.filter(cik=company.cik, name=company.name).update(company=company)
+        Filing.objects.filter(cik=company.cik, name=company.name, company=None).update(company=company)
         
         # company = Company.objects.filter(cik=filing.cik).first()
         
@@ -28,7 +28,7 @@ def populate_funds():
         name = name.replace('INC.', 'INC')
         name = name.replace(',', '')
         
-        Funds.objects.filter(company=name).update(company_rep=company)
+        Funds.objects.filter(company=name, company_rep=None).update(company_rep=company)
     
 
     print('Done with Funds')
@@ -39,7 +39,7 @@ def populate_executives():
 
         name = company.name
         
-        Executives.objects.filter(company=name).update(company_rep=company)
+        Executives.objects.filter(company=name, company_rep=None).update(company_rep=company)
         
     
     print('Done with Exectuives')
@@ -50,7 +50,7 @@ def populate_directors():
 
     # company = Company.objects.filter(cik=1318605).first()
 
-        Directors.objects.filter(company=company.name).update(company_rep=company)
+        Directors.objects.filter(company=company.name, company_rep=None).update(company_rep=company)
     # directors = Directors.objects.filter(company=company.name)
 
     # allDirectors = list(Directors.objects.all())
