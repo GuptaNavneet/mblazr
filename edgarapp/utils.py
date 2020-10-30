@@ -144,7 +144,7 @@ class TOCAlternativeExtractor(object):
 
         for tag in headings:
             
-            tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '')
+            tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
 
             tag_text_lower = tag_text.lower()
 
@@ -155,7 +155,7 @@ class TOCAlternativeExtractor(object):
                 for t in tag.parents:
 
                     if t.name == 'tr':
-                        tag_text = t.get_text().strip().replace('&nbsp;', ' ').replace('\n', '')
+                        tag_text = t.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
                         tag_text_lower = tag_text.lower()
                         break
                     elif t.name == 'body':
