@@ -238,7 +238,7 @@ def SearchFilingView(request):
 
       else:
         #normal fid is in place
-        filing = filings.filter(id=fid).first()  # the filing was requested by fid
+        filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
     
     links = []
@@ -330,6 +330,7 @@ def SearchFilingView(request):
     company_ticker = company.ticker
     
     url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    url = '/home/jotham/Upwork/Dhanajay/edgarapp/static/filings/' + filing.filingpath
 
     t_o_c = filing.table_of_contents.first()
     
@@ -355,6 +356,7 @@ def SearchFilingView(request):
             'executives': executives,
             'company_name': company_name,
             'current_filing': filing,
+            'funds': funds,
             'extended_template': extended_template,
             'table_of_contents': t_o_c.body,
             'fid': filing.id,
