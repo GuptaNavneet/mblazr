@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'capitalrap.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'edgarData',
+        'NAME': 'edgarDataLatest',
         'USER': 'reguser',
         'PASSWORD': 'Edgar@2020',
         'HOST': '172.104.7.112',
