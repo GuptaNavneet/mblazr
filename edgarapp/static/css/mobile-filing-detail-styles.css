@@ -24,6 +24,7 @@
        overflow:hidden;
         z-index:50;
          background-color:rgb(33, 150, 243);
+         overflow:hidden;
 
    }
 
@@ -36,7 +37,7 @@
         font-weight:bold;
         font-size:10pt;
 /*           border-right:1px solid #2d5986; */
-        width:32.70%;
+        width:32%;
         padding-left:0px;
         display:inline-block;
         overflow:hidden;
@@ -48,13 +49,10 @@
       border:none;
   }
 
-    .center-btn span{
-       float:right;
-    }
 
     .center-btn a{
      background-color:white;
-     padding:3px;
+     padding:0px;
      border-radius:4px;
      color:#3973ac;
      font-weight:normal;
@@ -118,10 +116,31 @@
         width:100vw;
         height: 100vh;
         min-width:100vw; /* Full height */
-        overflow:scroll; /* Enable scroll if needed */
+      /*  overflow:scroll; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
         background-color: #b9d3ee; /* Black w/ opacity */
     }
+     .modal-content{
+
+
+  max-width:98vw;
+    overflow-y:scroll;
+    overflow:scroll;
+    margin-left:1%;
+    max-height:85vh;
+    margin-top:2vh;
+    border:1px solid lightblue;
+
+
+
+     }
+ .close{
+     position:fixed;
+     right:0px;
+         font-weight:bolder;
+         padding:8px;
+   top:5px;
+     }
 
 
    .fl-table{
@@ -322,7 +341,7 @@
     padding-left:10px;
 }
     #table_filing h3 {
-    color:black;
+
     font-size: 16px;
     text-align: center;
     padding: 5px 10px;
@@ -419,14 +438,44 @@
         background-color:#6899ca;
         color:white;
     }
+    .exhibit-header{
+              background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-size:9pt!important;
+    }
+
+    .print-filing{
+     display:none;
+   background-color: #2196f3;
+    padding: 0px 8px;
+    margin: 0 2px 0 0;
+    text-transform: capitalize;
+    border-radius: 4px;
+    color: white;
+    position: relative;
+    right: -35%;
+    bottom: 1px;
+}
     #report_table_cont{
         position:absolute;
-        background-color:#d9d9d9;
+
         width:100%;
         left:0%;
          padding:0px;
          margin:0px;
-        font-weight:bolder;
+                background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    line-height: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+
     }
     #filings-section-list{
 
@@ -568,39 +617,41 @@
     border-top:1px solid blue;;
 }
 #shortcuts-mobile div{
-    display:inline;
+    
     height:50px;
+  
 }
 #shortcuts-mobile  #company_name{
     position:absolute;
     color:white;
     font-size:10pt;
     min-width:100vw;
-    text-align:center;
+
     font-family:Tahoma,Geneva,sans-serif;
     font-size:10pt;
     margin:0px;
     font-weight:bold;
     display:block;
+    padding-left:15px;
 }
 #short-mobile-links {
     position:absolute;
-    right:5px;
+    right:0px;
     z-index:40;
 
 
 }
 #short-mobile-links a{
-    font-size:10pt;
+    font-size:7.5pt;
     color:#204060;
     font-weight:bold;
     margin-top:5px;
     background-color:white;
     padding:2px;
     border-radius:5px;
-
-
-
+}
+#short-mobile-links a:hover{
+    text-decoration:none;
 }
  .document-view-section{
 

@@ -43,17 +43,26 @@
     .button2{
         width:25%;
     } */
-    .center-btn span{
-       float:right;
+    .center-btn #shortcts{
+     float:right;
+     
     }
     .center-btn a{
      background-color:white;
-     padding:3px;
+     padding:3px 1px;
      border-radius:4px;
      color:#3973ac;
      font-weight:normal;
+     font-size:9pt;
     }
-
+    .center-btn a:hover{
+        text-decoration:none;
+      
+    }
+.center-btn #title{
+ 
+    margin-left:15%;
+}
 
     .bs-example {
         font-family: sans-serif;
@@ -108,36 +117,65 @@
         z-index: 60; /* Sit on top */
         left: 0;
         top: 0;
-       
+
         width:100vw;
         height: 100vh;
         min-width:100vw; /* Full height */
-        overflow:scroll; /* Enable scroll if needed */
+       /* overflow:scroll; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
         background-color: #b9d3ee; /* Black w/ opacity */
-   
+
     }
+ .modal-content{
 
 
+    max-width:85vw;
+    margin-left:7.5vw;
+    max-height:90vh;
+    margin-top:2%;
+    border:1px solid lightblue;
+
+
+     }
+     #myModal .modal-content{
+         overflow-y:scroll;
+         overflow-x:hidden;
+
+     }
+       #myModal2 .modal-content{
+         overflow-y:scroll;
+         overflow-x:scroll;
+
+     }
+      #myModal3 .modal-content{
+         overflow:hidden;
+
+     }
+ .close{
+         font-weight:bolder;
+         padding:5px;
+
+     }
    .fl-table{
-       width:98vw;
-       min-width:98vw;
-       max-width:98vw!important;
-       height:98vh;
+       width:100%;
+       min-width:100%;
+       max-width:100%important;
+       height:100vh;
        min-height:50vh;
 
    }
 
 
     .fl-table td, .fl-table th {
-        text-align: center;
         padding: 10px;
-
+        text-transform:capitalize;
+              
     }
 
     .fl-table td {
         border-right: 1px solid #f8f8f8;
         font-size: 12px;
+        text-transform:capitalize;
     }
 
     .fl-table thead th {
@@ -149,6 +187,10 @@
     .fl-table thead th:nth-child(odd) {
         color: #ffffff;
         background: #324960;
+    }
+     .fl-table thead th:first-child {
+         text-align:left;
+         
     }
 
     .fl-table tr:nth-child(even) {
@@ -173,9 +215,10 @@
         padding: 30px 0;
     }
     .table-wrapper-execs{
-        min-height:90vh;
-        height:90vh;
-       
+       padding-bottom:50px;
+        width:98%;
+        margin-left:1%;
+
     }
     td div.comps {
         display: none;
@@ -215,7 +258,7 @@
     .section{
 
     border-right:1px solid #2d5986;
-   
+
     }
     #qbg {
       background-color: #ccffdd;
@@ -302,10 +345,8 @@
     padding-left:10px;
 }
     #table_filing h3 {
-    color:black;
-    font-size: 16px;
     text-align: center;
-    padding: 5px 10px;
+    padding: 8.5px 10px;
     margin: 0;
     font-weight:bolder;
     border-bottom: 1px solid black;
@@ -333,7 +374,8 @@
 }
 .part-link{
      margin-top:10px;
-   
+     margin-left:3px;
+
  }
  #table_filing .note-link{
         padding-left: 30px;
@@ -397,12 +439,33 @@
     }
     #report_table_cont{
         position:absolute;
-        background-color:#d9d9d9;
+
         width:100%;
         left:0%;
-         padding:0px;
+         padding:3px;
          margin:0px;
-        font-weight:bolder;
+            background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    line-height: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+     font-size:small!important;
+    }
+    .exhibit-header{
+            background-color: #ddd;
+    color: #444;
+    text-align: center;
+    height: 25px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-size:9pt!important;
+
+    }
+    .exhibit-link{
+        margin-left:4px;
     }
     #filings-section-list{
       min-width: 105%;
@@ -431,6 +494,9 @@
     #tr_doc{
 
       font-size:small;
+     
+
+     
     }
     .filedate{
     text-align:left;
@@ -453,7 +519,7 @@
     .filedate:hover{
       background-color:#d8ecf3;
     }
-  
+
     #search-icon{
         font-size:1.8em;
         font-weight:bolder;
@@ -463,8 +529,7 @@
         -o-transform: rotate(45deg);
         transform: rotate(45deg);
     }
-
-    #searchform{
+   #searchform{
    position:relative;
    top:1vh;
 
@@ -474,7 +539,7 @@
     min-width:100%;
     height:40px;
     margin-bottom:8px;
-    border-bottom:1px solid black;
+    border-bottom:1px solid rgb(33, 150, 243);
     }
 
     #myBtn{
@@ -485,14 +550,14 @@
         min-height:40px;
         position:absolute;
         right:-25px;
-        top:0px;
+        top:5px;
 
 
     }
     #searchform input{
         font-size:10pt;
         padding-left:40px;
-        padding-top:0px;
+        padding-top:15px;
         margin:0px;
         padding-bottom:10px;
         text-transform:capitalize;
@@ -500,9 +565,8 @@
         max-height:40px;
          outline:none;
          width:100%;
-         border-bottom:1px solid black;
+         border-bottom:1px solid rgb(33, 150, 243);
     }
-
 
 
     #filings-section-list #companyname{
@@ -546,13 +610,15 @@
  .toc{
 
       position:relative;
-     top:0.9vh;
+     top:1.2vh;
      left:0%;
      height:95vh;
       max-height:95vh;
       overflow-y:scroll;
     padding :0px;
      margin-left :0px;
+
+
 
  }
   #fixed-content-filing{
@@ -569,5 +635,17 @@
     color: white;
     position: absolute;
     right: 0;
-    bottom: 1px
+    bottom: 1px;
+}
+.print-filing{
+display:none;
+   background-color: #2196f3;
+    padding: 0px 8px;
+    margin: 0 2px 0 0;
+    text-transform: capitalize;
+    border-radius: 4px;
+    color: white;
+    position: relative;
+    right: -30%;
+    bottom: 1px;
 }
