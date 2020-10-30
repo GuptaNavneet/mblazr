@@ -6,7 +6,7 @@
 {% load static %}
 
 {% block head %}
-  <title>{{ object_list.1.0 }} Filing</title>
+  <title>{{ company_name }} Filing</title>
 
   <script type="text/javascript" src="{% static 'js/autocomplete.js' %}"></script>
 
@@ -24,7 +24,7 @@
 
         <div class="col-md-3 button1">mBlazr</div>
          <div class="col-md-6  center-btn">
-             <span id="title">{{ object_list.1.0 }} Earnings {{ object_list.3.filingdate }}</span>
+             <span id="title">{{ company_name }} Earnings {{ current_filing.filingdate }}</span>
         <span id="shortcts">
 
             <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
@@ -33,12 +33,12 @@
           </span>
 
        </div>
-       {% if object_list.3.filingtype == '10-Q' %}
-       <div class="col-md-3  button2">{{ object_list.1.1 }} {{ object_list.3.filingtype }} Quarterly Report</div>
-       {%elif object_list.3.filingtype == '10-K'%}
-       <div class="col-md-3  button2">{{ object_list.1.1 }} {{ object_list.3.filingtype }} Annually Report</div>
+       {% if current_filing.filingtype == '10-Q' %}
+       <div class="col-md-3  button2">{{ company_ticker }} {{ current_filing.filingtype }} Quarterly Report</div>
+       {%elif current_filing.filingtype == '10-K'%}
+       <div class="col-md-3  button2">{{ company_ticker }} {{ current_filing.filingtype }} Annually Report</div>
        {%else%}
-       <div class="col-md-3  button2">{{ object_list.1.1 }} {{ object_list.3.filingtype }} Report</div>
+       <div class="col-md-3  button2">{{ company_ticker }} {{ current_filing.filingtype }} Report</div>
        {%endif%}
 
 
@@ -50,7 +50,7 @@
           <button class="center-btn show_doc_btn">Mblazr</button>
           <button class="button2 show_toc_btn">Filing</button>
           <div id="shortcuts-mobile" >
-            <div id="company_name">{{ object_list.1.0 }}</div>
+            <div id="company_name">{{ company_name }}</div>
             <div id="short-mobile-links" >
                  <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
             <a href="#item1" title="Income Statement"><small>Income statement</small></a>
@@ -96,10 +96,10 @@
                       <th>PUT OR CALL</th>
                     </thead>
                     <tbody class = "tbody">
-                      {% for fund in object_list.4 %}
+                      {% for fund in funds %}
                         <tr id="tr_doc">
                           <td  class="success fund">{{fund.fund}}</td>
-                          <td class = "fund-shares" style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0 }}&fid={{ filing.id }}';">{{fund.share_prn_amount}}
+                          <td class = "fund-shares" style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{fund.share_prn_amount}}
                           </td>
                           <td class="fund-value"><center>{{ fund.value }}</center></td>
                           <td class="success"><center>{{fund.put_call}}</center></td>
@@ -180,7 +180,7 @@
               } else {
                 quarter = 2;
               }
-              document.getElementById("dynamic-header").innerHTML = "Top 100 Shareholders of {{ object_list.1.0 }} as of quarter " + quarter + " " + year;
+              document.getElementById("dynamic-header").innerHTML = "Top 100 Shareholders of {{ company_name }} as of quarter " + quarter + " " + year;
 
               function sortTable(n) {
                 var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
@@ -267,8 +267,8 @@
                 <span class="close">&times;</span>
                 <h2 class = "fund-header" style="text-decoration:underline" id = 'dynamicDirector-header'></h2>
                   <div class = "table-wrapper-director">
-                    {% if not object_list.5 %}
-                      <h2>Director information is not available for {{ object_list.1.0 }}</h2>
+                    {% if not directors %}
+                      <h2>Director information is not available for {{ company_name }}</h2>
                     {% else %}
                     <table class = "fl-table table table-responsive table-hover" id = "director-table">
                       <thead>
@@ -278,7 +278,7 @@
                         <th class="directorCol">Other Director Memberships</th>
                       </thead>
                       <tbody class = "tbody">
-                        {% for person, comps in object_list.5 %}
+                        {% for person in directors %}
                           <tr id="tr_doc" class="directorDisplay">
                             <td id = "director" class="directorCol" >
                               <center>{{person.director}}</center>
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 }
               });
 
-              document.getElementById("dynamicDirector-header").innerHTML = "Directors of {{ object_list.1.0 }} as of " + date.getFullYear();
+              document.getElementById("dynamicDirector-header").innerHTML = "Directors of {{ company_name }} as of " + date.getFullYear();
 })
             </script>
 
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 <span class="close">&times;</span>
                 <h2 class = "fund-header" style="text-decoration:underline" id = 'dynamicExecutive-header'></h2>
                   <div class = "table-wrapper-execs">
-                    {% for exec, matches in object_list.6 %}
+                    {% for exec in executives %}
                       {% autoescape off %}
                         {{ exec.executives }}
                       {% endautoescape %}
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 }
               }
 
-              document.getElementById("dynamicExecutive-header").innerHTML = "Executives of {{ object_list.1.0 }} as of " + date.getFullYear();
+              document.getElementById("dynamicExecutive-header").innerHTML = "Executives of {{ company_name }} as of " + date.getFullYear();
 })
             </script>
 
@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <table class=" table-hover ">
               <div id="fixed-content-filing">
 
-              <div id="companyname" class="text-center center">{{ object_list.1.0 }}</div>
+              <div id="companyname" class="text-center center">{{ company_name }}</div>
                   <div id="buttons-file-sec" >
                       <button id="myBtn1" class="btn btn-sm ">Funds</button>
                       <button id="myBtn2" class="btn btn-sm  ">Directors</button>
@@ -433,14 +433,14 @@ document.addEventListener('DOMContentLoaded',function(){
 <!--              </tr>-->
             </thead>
             <tbody>
-              {% for filing in object_list.2 %}
+              {% for filing in company_filings %}
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.filingtype %}
-                    <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span></td>
+                    <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-Q</center></td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.filingdate }}  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span></td>
                   {% elif "10-K" in filing.filingtype %}
-                    <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed  on {{ filing.filingdate }} <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span> </td>
+                    <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.filingdate }} <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -455,11 +455,11 @@ document.addEventListener('DOMContentLoaded',function(){
               </tr>
             </thead>
             <tbody>
-              {% for filing in object_list.2 %}
+              {% for filing in company_filings %}
                 <tr>
                   {% if "8-K" in filing.filingtype %}
                     <td class="info"><center>8-K</center></td>
-                    <td style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ object_list.0.0 }}&fid={{ filing.id }}';">Filed on {{ filing.filingdate }} <span onclick=" window.location.href='/printer/ + {{ filing.id }} + /'">print</span> </td>
+                    <td style="cursor:pointer;" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on {{ filing.filingdate }} <span onclick=" window.location.href='/printer/ + {{ filing.id }} + /'">print</span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
