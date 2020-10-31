@@ -368,7 +368,6 @@ def SearchFilingView(request):
     with open(url) as file:
         filing_html = file.read()
 
-    # object_list is ((q, fid), (companyname, name), (filings object), (filing))
     return render(
         request, template_name, {
             'object_list': object_list,
