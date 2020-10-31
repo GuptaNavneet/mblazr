@@ -114,20 +114,20 @@ def populate_all():
 
     for company in Company.objects.all():
 
-        Filing.objects.filter(cik=company.cik, name=company.name).update(company=company)
+        Filing.objects.filter(cik=company.cik).update(company=company)
             
-        name = company.name
-        name = name.upper()
-        name = name.replace('INTERNATIONAL', 'INTL')
-        name = name.replace(' /DE', '')
-        name = name.replace('/DE', '')
-        name = name.replace('INC.', 'INC')
-        name = name.replace(',', '')
+        # name = company.name
+        # name = name.upper()
+        # name = name.replace('INTERNATIONAL', 'INTL')
+        # name = name.replace(' /DE', '')
+        # name = name.replace('/DE', '')
+        # name = name.replace('INC.', 'INC')
+        # name = name.replace(',', '')
 
-        Funds.objects.filter(company=name).update(company_rep=company)
+        # Funds.objects.filter(company=name).update(company_rep=company)
 
-        Executives.objects.filter(company=company.name).update(company_rep=company)
-        Directors.objects.filter(company=company.name).update(company_rep=company)
+        # Executives.objects.filter(company=company.name).update(company_rep=company)
+        # Directors.objects.filter(company=company.name).update(company_rep=company)
 
     print('Done with all')
     # populate_filings()
