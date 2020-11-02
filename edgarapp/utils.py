@@ -90,10 +90,11 @@ class TOCAlternativeExtractor(object):
 
         default_table = self._get_toc(html)
 
-        soup = BeautifulSoup(html, 'lxml')
         
-        modified_html = html.replace(default_table, '[[REMOVED_TABLE]]')
-        modified_soup = BeautifulSoup(modified_html, 'lxml')
+        if default_table:
+            html = html.replace(default_table, '[[REMOVED_TABLE]]')
+        
+        modified_soup = BeautifulSoup(html, 'lxml')
 
         new_soup = ''
 
@@ -144,7 +145,7 @@ class TOCAlternativeExtractor(object):
 
         for tag in headings:
             
-            tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '')
+            tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
 
             tag_text_lower = tag_text.lower()
 
@@ -155,7 +156,7 @@ class TOCAlternativeExtractor(object):
                 for t in tag.parents:
 
                     if t.name == 'tr':
-                        tag_text = t.get_text().strip().replace('&nbsp;', ' ').replace('\n', '')
+                        tag_text = t.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
                         tag_text_lower = tag_text.lower()
                         break
                     elif t.name == 'body':
@@ -206,7 +207,7 @@ class TOCAlternativeExtractor(object):
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
             
         
-        self.html = str(modified_soup.body).replace('[[REMOVED_TABLE]]', default_table)
+        self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
 
         return new_soup
 
@@ -242,9 +243,12 @@ class TOCAlternativeExtractor(object):
         if pos == -1:
             pos = text.lower().find("index")
 
+        # if pos == -1:
+        #     pos = text.lower().find('<hr style="page-break-after:always"')
+        
         if pos == -1:
-            pos = text.lower().find('<hr style="page-break-after:always"')
-
+            return ''
+        
         text = text[pos:]
 
         end_pos = text.lower().find('</table>')

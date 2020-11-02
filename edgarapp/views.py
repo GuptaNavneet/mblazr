@@ -234,6 +234,7 @@ def SearchFilingView(request):
      fid=int(request.GET.get('fid'))
     except:
      fid="all"
+    fid = request.GET.get('fid')
 
     #user is not logged in and
 
@@ -243,104 +244,114 @@ def SearchFilingView(request):
 
     elif request.user.is_authenticated or ( not request.user.is_authenticated and query == 'TSLA') :
         #user is authenticated or they are not authenticated but are searching for Tesla
-      #check if query string has valid arguments
+    #check if query sqtring has valid arguments
+      company_filings = Filing.objects.filter(company__ticker=query)
+      
       if fid=='all':
         #query string fetches the latest filing
+        filing = company_filings.first()
 
-        filings = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate')
-        filing = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate').latest('filingdate')
          # the latest filing is being recieved
 
       elif fid != None:
         #normal fid is in place
-        filings = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate')
-        filing = Filing.objects.get(id=fid)  # the filing was requested by fid
-      else:
-        return HttpResponseNotFound(content="Filing Not Found")
+        filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
-
+      company_filings = [filing.dict_values() for filing in company_filings]
+    
     links = []
     verify = []
-    name = mycompany.name
-    name = name.upper()
-    name = name.replace('INTERNATIONAL', 'INTL')
-    name = name.replace(' /DE', '')
-    name = name.replace('/DE', '')
-    name = name.replace('INC.', 'INC')
-    name = name.replace(',', '')
+
+    company = filing.company
+    #   name = mycompany.name
+    #   name = name.upper()
+    #   name = name.replace('INTERNATIONAL', 'INTL')
+    #   name = name.replace(' /DE', '')
+    #   name = name.replace('/DE', '')
+    #   name = name.replace('INC.', 'INC')
+    #   name = name.replace(',', '')
 
 
 
-    funds = Funds.objects.raw(
-        'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
+    #   funds = Funds.objects.raw(
+    #     'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
+    funds = company.funds.all()[:100]
+        # 'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
 
-    directors = Directors.objects.filter(
-        company=mycompany.name).order_by('-director')
+    # directors = Directors.objects.filter(company=mycompany.name).order_by('-director')
+    directors = company.company_directors.all()
 
-    allDirectors = Directors.objects.all()
+    # allDirectors = Directors.objects.all()
 
-    executives = Executives.objects.filter(company=mycompany.name)
+    # executives = Executives.objects.filter(company=mycompany.name)
+    executives = company.executives.all()
 
-    today = datetime.today()
-    currYear = today.year
+    # today = datetime.today()
+    # currYear = today.year
 
-    for year in executives:
-        if year.filingdate.split('-')[0] == str(currYear):
-            exectable.append(year)
+    # for year in executives:
+    #     if year.filingdate.split('-')[0] == str(currYear):
+    #         exectable.append(year)
 
-    for person in directors:
-        if person:
-            personA = person.director.replace("Mr.", '')
-            personA = person.director.replace("Dr.", '')
-            personA = person.director.replace("Ms.", '')
-            a = set([s for s in personA if s != "," and s != "." and s != " "])
-            aLast = personA.split(' ')[-1]
-            if (len(personA.split(' ')) == 1):
-                aLast = personA.split('.')[-1]
-        comps = []
-        for check in allDirectors:
-            if person:
-                personB = check.director.replace("Mr.", '')
-                personB = check.director.replace("Dr.", '')
-                personB = check.director.replace("Ms.", '')
-                bLast = personB.split(' ')[-1]
-                if (len(personB.split(' ')) == 1):
-                    bLast = personB.split('.')[-1]
-                # print(personA, aLast, person.company, personB, bLast, check.company)
-                if aLast == bLast:
-                    # first check jaccard index to speed up algo, threshold of .65
-                    b = set([s for s in personB if s !=
-                             "," and s != "." and s != " "])
-                    if (len(a.union(b)) != 0):
-                        jaccard = float(
-                            len(a.intersection(b)) / len(a.union(b)))
-                    else:
-                        jaccard = 1
-                    # print(personA, personB, jaccard)
-                    if (jaccard > 0.65):
-                        # run Ratcliff-Obershel for further matching, threshold of .75 and prevent self-match
-                        sequence = textdistance.ratcliff_obershelp(
-                            personA, personB)
-                        # print(sequence)
-                        if sequence > 0.75 and mycompany.name != check.company:
-                            comps.append(check.company)
-        if not comps:
-             comps.append('Director is not on the board of any other companies')
-        matches.append(comps)
+    # for person in directors:
+    #     if person:
+    #         personA = person.director.replace("Mr.", '')
+    #         personA = person.director.replace("Dr.", '')
+    #         personA = person.director.replace("Ms.", '')
+    #         a = set([s for s in personA if s != "," and s != "." and s != " "])
+    #         aLast = personA.split(' ')[-1]
+    #         if (len(personA.split(' ')) == 1):
+    #             aLast = personA.split('.')[-1]
+    # comps = []
+    # for check in allDirectors:
+    #     if person:
+    #         personB = check.director.replace("Mr.", '')
+    #         personB = check.director.replace("Dr.", '')
+    #         personB = check.director.replace("Ms.", '')
+    #         bLast = personB.split(' ')[-1]
+    #         if (len(personB.split(' ')) == 1):
+    #             bLast = personB.split('.')[-1]
+    #         print(personA, aLast, person.company, personB, bLast, check.company)
+    #         if aLast == bLast:
+    #             # first check jaccard index to speed up algo, threshold of .65
+    #             b = set([s for s in personB if s !=
+    #                     "," and s != "." and s != " "])
+    #             if (len(a.union(b)) != 0):
+    #                 jaccard = float(
+    #                     len(a.intersection(b)) / len(a.union(b)))
+    #             else:
+    #                 jaccard = 1
+    #                 # print(personA, personB, jaccard)
+    #             if (jaccard > 0.65):
+    #                     # run Ratcliff-Obershel for further matching, threshold of .75 and prevent self-match
+    #                 sequence = textdistance.ratcliff_obershelp(
+    #                     personA, personB)
+    #                 if sequence > 0.75 and mycompany.name != check.company:
+    #                     comps.append(check.company)
+    # if not comps:
+    #     comps.append('Director is not on the board of any other companies')
+    # matches.append(comps)
+
+
 
 
 
     object_list = []
-    object_list.append((query, fid))
-    object_list.append((mycompany.name, mycompany.ticker))
-    object_list.append(filings)
-    object_list.append(filing)
-    object_list.append(funds)
-    object_list.append(zip(directors, matches))
-    object_list.append(zip(exectable, matches))
-    object_list.append(links)
+    # object_list.append((query, fid))
+    # object_list.append((mycompany.name, mycompany.ticker))
+    # object_list.append(company_filings)
+    # object_list.append(filing)
+    # object_list.append(funds)
+    # object_list.append(zip(directors, matches))
+    # object_list.append(zip(exectable, matches))
+    # object_list.append(links)
+    
+    company_name = company.name
+    company_ticker = company.ticker
+    
 
-    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+
+    #url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
     #url ="E:/Workspace/mblazr/edgarapp/static/Filings/fl/jcob.html"
     #try:
     t_o_c = filing.table_of_contents.first()
@@ -382,10 +393,16 @@ def SearchFilingView(request):
     return render(
         request, template_name, {
             'object_list': object_list,
+            'company_filings': company_filings,
+            'company_ticker': company_ticker,
+            'directors': directors,
+            'executives': executives,
+            'company_name': company_name,
+            'current_filing': filing,
+            'funds': funds,
             'extended_template': extended_template,
             'table_of_contents': t_o_c.body,
             'fid': filing.id,
-            'filing_html': filing_html
         }
     )
 
