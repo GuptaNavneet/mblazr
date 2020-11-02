@@ -660,7 +660,7 @@
       font-family:Tahoma,Geneva,sans-serif;;
      padding:0px 20px;
      top:3.5vh;
-      overflow-y:scroll;
+      overflow:hidden;
       height:95vh;
       max-height:95vh!important;
       overflow-x:hidden;

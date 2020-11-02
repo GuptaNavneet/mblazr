@@ -61,7 +61,7 @@
     }
 .center-btn #title{
  
-    margin-left:5%;
+    margin-left:15%;
 }
 
     .bs-example {
@@ -603,10 +603,13 @@
       overflow-y:scroll;
       height:95vh;
       max-height:95vh!important;
-      overflow-x:hidden;
+      overflow:hidden;
       background-color:white;
       color:black;
+      min-width:50vw;
+      max-width:50vw;
  }
+
  .toc{
 
       position:relative;
