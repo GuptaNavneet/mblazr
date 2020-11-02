@@ -43,6 +43,14 @@ class Filing(models.Model):
 	def __str__(self):
 		return self.name
 
+	def dict_values(self):
+
+		return {
+			'id': self.id,
+			'type': self.filingtype,
+			'date': self.filingdate
+		}
+
 
 class Funds(models.Model):
 	fund = models.CharField(max_length=255)

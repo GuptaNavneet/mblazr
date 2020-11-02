@@ -232,7 +232,7 @@ def SearchFilingView(request):
       
       if fid=='all':
         #query string fetches the latest filing
-        filing = company_filings[0]
+        filing = company_filings.first()
 
          # the latest filing is being recieved
 
@@ -240,6 +240,7 @@ def SearchFilingView(request):
         #normal fid is in place
         filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
+      company_filings = [filing.dict_values() for filing in company_filings]
     
     links = []
     verify = []
@@ -342,8 +343,6 @@ def SearchFilingView(request):
         t_o_c = filing.table_of_contents.create(body=extract_data.table)
 
 
-    with open(url) as file:
-        filing_html = file.read()
 
     return render(
         request, template_name, {
@@ -358,7 +357,6 @@ def SearchFilingView(request):
             'extended_template': extended_template,
             'table_of_contents': t_o_c.body,
             'fid': filing.id,
-            'filing_html': filing_html
         }
     )
 
