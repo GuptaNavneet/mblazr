@@ -254,6 +254,8 @@
         top:1vh;
         padding-left:0px;
         border-right:1px solid #2d5986;
+        min-width:25vw;
+        max-width:25vw!important;
        }
     .section{
 
@@ -494,9 +496,9 @@
     #tr_doc{
 
       font-size:small;
-     
 
-     
+
+
     }
     .filedate{
     text-align:left;
@@ -597,16 +599,21 @@
 
  .document-view-section{
      position:relative;
-     overflow-y:scroll;
+     overflow:scroll;
      padding:0px 60px;
      top:1vh;
       overflow-y:scroll;
       height:95vh;
       max-height:95vh!important;
-      overflow-x:hidden;
+      overflow:hidden;
       background-color:white;
       color:black;
+      min-width:50vw;
+      max-width:50vw;
+
+
  }
+
  .toc{
 
       position:relative;
@@ -617,6 +624,9 @@
       overflow-y:scroll;
     padding :0px;
      margin-left :0px;
+
+     min-width:25%;
+     max-width:25%!important;
 
 
 
@@ -648,4 +658,5 @@ display:none;
     position: relative;
     right: -30%;
     bottom: 1px;
+
 }

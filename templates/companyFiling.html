@@ -27,9 +27,9 @@
              <span id="title">{{ company_name }} Earnings {{ current_filing.filingdate }}</span>
         <span id="shortcts">
 
-            <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
-            <a href="#item1" title="Income Statement"><small>Income statement</small></a>
-            <a href="" title="Cash Flows"><small>Cash Flows</small></a>
+            <a href="#item1" title="Balance sheet"><small>Balance sheet</small></a>
+            <a href="#item2" title="Income Statement"><small>Income statement</small></a>
+            <a href="#item3" title="Cash Flows"><small>Cash Flows</small></a>
           </span>
 
        </div>
@@ -439,10 +439,10 @@ document.addEventListener('DOMContentLoaded',function(){
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.type %}
                     <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }}  <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span></td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  > <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }} </span> <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span></td>
                   {% elif "10-K" in filing.type %}
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/"> print</a></span> </td>
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} </span> <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span> </td>
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -477,9 +477,10 @@ document.addEventListener('DOMContentLoaded',function(){
       <!----------- 2nd column ---------------->
       <!------------ MAIN BODY ---------------->
 
-      <iframe src="{% static 'filings/' %}{{ current_filing.filingpath }}" class="col-md-6 section document-view-section" id="second">
-
-      </iframe>
+      <div  class="col-md-6 section document-view-section" id="second">
+         <iframe  style="position:absolute;left:0vw;min-width:100%;max-width:100%;top:0vh;height:100%;max-height:100%" src="{% static 'filings/' %}{{ current_filing.filingpath }}">
+         </iframe>
+      </div>
 
 
       <!--------------------------------------->
@@ -512,7 +513,7 @@ document.addEventListener('DOMContentLoaded',function(){
         e.preventDefault()
         let hash = this.hash
 
-        iframeDocument = $('#second')[0].contentWindow.document
+        iframeDocument = document.querySelector('iframe').contentDocument
         
         try {
             iframeDocument.querySelector(hash).scrollIntoView({behavior:'smooth'})
@@ -548,8 +549,10 @@ document.addEventListener('DOMContentLoaded',function(){
             openPrintPortion(part)
         })
     }
-
+     
     document.addEventListener('DOMContentLoaded',function(){
+      document.querySelector('iframe').style.padding = "2% 4%"
+      document.querySelector('iframe').style.border ="none"
 
         let partsInTOC = document.querySelectorAll('.part-link')
         let itemsInToc = document.querySelectorAll('.item-link')
@@ -610,7 +613,7 @@ document.addEventListener('DOMContentLoaded',function(){
     let filingvalue = window.location.href.split('&')[1].split('=')[1]
 
     if (filingvalue==='all'){
-        console.log("this is working")
+      
         let row =document.querySelector('#filings-section-list').querySelector('tbody').querySelectorAll('tr')[0]
         row.style.backgroundColor='#f3e5d8';
     } else {
