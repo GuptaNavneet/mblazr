@@ -216,8 +216,17 @@ def SearchFilingView(request):
     exectable = []
 
    
-    query = request.GET.get('q')
-    fid = request.GET.get('fid')
+
+    #Check to ensure query value is not empty if empty we search for tesla
+    if request.GET.get('q') != None or request.GET.get('q') != '':
+        query = request.GET.get('q')
+    else:
+        query = 'TSLA'
+
+
+
+
+
 
     #user is not logged in and
     # they are not searching for Tesla
@@ -229,7 +238,9 @@ def SearchFilingView(request):
         #user is authenticated or they are not authenticated but are searching for Tesla
     #check if query sqtring has valid arguments
       company_filings = Filing.objects.filter(company__ticker=query)
-      
+
+
+      fid = request.GET.get('fid')
       if fid=='all':
         #query string fetches the latest filing
         filing = company_filings.first()
@@ -238,6 +249,7 @@ def SearchFilingView(request):
 
       else:
         #normal fid is in place
+
         filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
       company_filings = [filing.dict_values() for filing in company_filings]
@@ -537,10 +549,15 @@ def PlanView(request):
 
 def PrinterView(request, fid, start):
 
-    filing = Filing.objects.get(id=fid)
+    try:
+     filing = Filing.objects.get(id=fid)
+    except:
+        return HttpResponse(status=404,content="Requested Filing Could not be Found for printing")
 
     url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    if start=='full':
+        return HttpResponseRedirect('/static/filings/'+filing.filingpath)
+    else:
+        printer = Printer().generate(url, start)
 
-    printer = Printer().generate(url, start)
-
-    return render(request, 'printer.html', {'html': printer})
+        return render(request, 'printer.html', {'html': printer})
