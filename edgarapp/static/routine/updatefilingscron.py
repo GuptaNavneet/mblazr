@@ -1,7 +1,8 @@
 # ../static/routine/updatefilings.py
 # download index files and write content into Mysql
 # @radiasl for ExarNorth
-
+from boto3 import resource,client
+from  boto3.s3.transfer import TransferConfig
 import csv, time, urllib.request
 from bs4 import BeautifulSoup
 from requests import get
@@ -10,6 +11,14 @@ import datetime
 # Download index files and write content into Mysql
 import mysql.connector, requests, os, os.path
 from mysql.connector import Error, errorcode
+#s3 setup
+
+AccesseyID='AKIASSCKYNFNNKTWSDOE'
+Secret="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"
+client = client('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
+s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
+bucket_name='mblazr'
+
 
 today = datetime.date.today()
 # os.chdir(os.path.dirname(__file__))
@@ -60,16 +69,37 @@ try:
                     url = url.replace('ix?doc=/', '')
 
                 req = requests.get(url)
-                directory = '/mnt/filings/files/'+log_row[3] # log_row[3] = cik
+                #directory = '/mnt/filings/files/'+log_row[3] # log_row[3] = cik
+                directory = 'filings/files/' + log_row[3]  # log_row[3] = cik
+
                 
                 # create dir if it doesn't exist
-                if not os.path.exists(directory):
-                    os.makedirs(directory)
+                # if not os.path.exists(directory):
+                #     os.makedirs(directory)
 
                 # write file in dir if doesn't exist
-                localpath = directory+'/'+log_row[4]+'-'+url.rsplit('/', 1)[1]  # directory/filingdate-filename
-                if not os.path.isfile(localpath):
-                    open(localpath, 'wb').write(req.content)
+                #localpath = directory+'/'+log_row[4]+'-'+url.rsplit('/', 1)[1]  # directory/filingdate-filename
+                s3path = directory+'/'+log_row[4]+'-'+url.rsplit('/', 1)[1]  # directory/filingdate-filename
+                # if not os.path.isfile(localpath):
+                #     open(localpath, 'wb').write(req.content)
+                #saving to s3
+                try:
+                    response = client.put_object(
+                        ACL='public-read',
+                        Bucket=bucket_name,
+                        Body=req.content,
+                        Key=s3path,
+                        ContentEncoding='utf-8',
+                    )
+                    if response['ResponseMetadata'].get('HTTPStatusCode') == 200:
+                        print("File was Uploaded Successfully")
+                    else:
+                        raise ValueError("File Uploading Experienced some Error : " + response)
+
+
+                except Exception as e:
+                    print(e)
+
 
                 # add file path to database
                 loglocal = [log_row[3], log_row[1], log_row[2], log_row[4], log_row[3]+'/'+log_row[4]+'-'+url.rsplit('/', 1)[1]]
