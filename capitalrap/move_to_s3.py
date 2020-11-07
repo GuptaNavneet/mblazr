@@ -1,5 +1,5 @@
 from boto3 import resource,client
-from capitalrap.settings import AccesseyID,Secret,bucket_name
+from .settings import AccesseyID,Secret,bucket_name
 import os
 
 
