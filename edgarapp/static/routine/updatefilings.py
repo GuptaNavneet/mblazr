@@ -9,7 +9,7 @@ from requests import get
 # Download index files and write content into Mysql
 import mysql.connector, requests, os, os.path
 from mysql.connector import Error, errorcode
-from capitalrap.settings import AccesseyID,Secret,bucket_name
+from .config import AccesseyID,Secret,bucket_name
 #s3 setup
 
 client = client('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
@@ -17,11 +17,14 @@ s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
 
 
 
+
+
 try:
-    connection = mysql.connector.connect(host='172.104.7.112',
-                                         database='edgarData',
-                                         user='reguser',
-                                         password='Edgar@2020')
+    connection = mysql.connector.connect(host='localhost',#'172.104.7.112',
+                                         database='edgardatalatest',#'edgarData',
+                                         user='root',#'reguser',
+                                         password='',#'Edgar@2020'
+                                          )
 
     cursor = connection.cursor(buffered=True)
 
