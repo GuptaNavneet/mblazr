@@ -1,6 +1,7 @@
-from boto3 import resource,client
-from .settings import AccesseyID,Secret,bucket_name
+from boto3 import resource
+from .static.routine.config import AccesseyID,Secret,bucket_name
 import os
+
 
 
 s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
