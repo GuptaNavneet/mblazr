@@ -28,8 +28,8 @@ from django.views.generic import ListView, TemplateView
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
 from .models import Company, Directors, Executives, Filing, Funds, Proxies
 from .utils import TOCAlternativeExtractor, Printer
-
-
+from .readfiling import readFiling
+from django.views.decorators.clickjacking import xframe_options_exempt
 def handler404(request, *args, **argv):
 
     extended_template = 'base.html'
@@ -205,7 +205,6 @@ def SearchResultsView(request):
 
 @gzip_page
 def SearchFilingView(request):
-
     template_name = 'companyFiling.html'
 
     extended_template = 'base_company.html'
@@ -342,7 +341,8 @@ def SearchFilingView(request):
     company_name = company.name
     company_ticker = company.ticker
     
-    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    #url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    url = readFiling(filing.filingpath)
 
     t_o_c = filing.table_of_contents.first()
     
@@ -369,11 +369,18 @@ def SearchFilingView(request):
             'extended_template': extended_template,
             'table_of_contents': t_o_c.body,
             'fid': filing.id,
+            'filepath':filing.filingpath
+
         }
     )
+@xframe_options_exempt
+def filing_fetch(request,id,file):
 
-
-
+    try:
+      data = readFiling(str(id)+'/'+str(file))
+      return HttpResponse(status=200,content_type="text/html",content=data)
+    except:
+        return HttpResponse(status=500,content_type="text/html ",content="<h3 style='text-align:center'>Something went wrong while we were getting the filings</h3>")
 def AboutView(request):
     template_name = 'about.html'
     extended_template = 'base.html'
@@ -554,9 +561,9 @@ def PrinterView(request, fid, start):
     except:
         return HttpResponse(status=404,content="Requested Filing Could not be Found for printing")
 
-    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    url = readFiling(filing.filingpath)
     if start=='full':
-        return HttpResponseRedirect('/static/filings/'+filing.filingpath)
+        return HttpResponseRedirect('/getfiling/'+filing.filingpath)
     else:
         printer = Printer().generate(url, start)
 
