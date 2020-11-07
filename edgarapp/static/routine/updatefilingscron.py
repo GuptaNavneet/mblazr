@@ -12,12 +12,11 @@ import datetime
 import mysql.connector, requests, os, os.path
 from mysql.connector import Error, errorcode
 #s3 setup
+from capitalrap.settings import AccesseyID,Secret,bucket_name
 
-AccesseyID='AKIASSCKYNFNNKTWSDOE'
-Secret="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"
 client = client('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
 s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
-bucket_name='mblazr'
+
 
 
 today = datetime.date.today()
