@@ -478,8 +478,9 @@ document.addEventListener('DOMContentLoaded',function(){
       <!------------ MAIN BODY ---------------->
 
       <div  class="col-md-6 section document-view-section" id="second">
-         <iframe  src="{% static 'filings/' %}{{ current_filing.filingpath }}">
+         <iframe  src="/getfiling/{{ filepath }}">
          </iframe>
+
       </div>
 
 
