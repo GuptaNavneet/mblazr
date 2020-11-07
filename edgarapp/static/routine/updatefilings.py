@@ -9,14 +9,12 @@ from requests import get
 # Download index files and write content into Mysql
 import mysql.connector, requests, os, os.path
 from mysql.connector import Error, errorcode
-
+from capitalrap.settings import AccesseyID,Secret,bucket_name
 #s3 setup
 
-AccesseyID='AKIASSCKYNFNNKTWSDOE'
-Secret="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"
 client = client('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
 s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
-bucket_name='mblazr'
+
 
 
 try:

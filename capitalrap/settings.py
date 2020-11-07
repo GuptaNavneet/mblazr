@@ -24,10 +24,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '(jb(b+5r68^(-ye))k-x@f%gyhy=1w)b!4#%g*(pg-9cti3u@y'
 
+#s3
+AccesseyID='AKIASSCKYNFNNKTWSDOE'
+Secret="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"
+bucket_name='mblazr'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.104.7.112', 'alphahuntr.com', 'www.alphahuntr.com', 'emblazr.com', 'www.emblazr.com', 'mblazr.com', 'www.mblazr.com'] #Linode server
+ALLOWED_HOSTS = ['localhost','172.104.7.112', 'alphahuntr.com', 'www.alphahuntr.com', 'emblazr.com', 'www.emblazr.com', 'mblazr.com', 'www.mblazr.com'] #Linode server
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_USE_SSL = True
@@ -160,5 +165,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # To access filings
 STATICFILES_DIRS = [
-    ('filings', '/mnt/filings/files/'),
+    #('filings',os.path.join(BASE_DIR, 'filings')) for local use
+    ('filings', '/mnt/filings/files/')
 ]
