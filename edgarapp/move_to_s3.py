@@ -1,5 +1,5 @@
 from boto3 import resource
-from .static.routine.config import AccesseyID,Secret,bucket_name
+from edgarapp.static.routine.config import AccesseyID,Secret,bucket_name
 import os
 
 
