@@ -101,8 +101,8 @@ def populate_other_companies():
                             # print(sequence)
                             if sequence > 0.75 and company.name != check.company:
                                 # comps.append(check.company)
-                                other_company = Company.objects.get(name=check.company)
-                                person.other_companies.add(other_company)
+                                other_companies = Company.objects.filter(name=check.company)
+                                person.other_companies.add(*other_companies)
                                 
             # if not comps:
                 # comps.append('Director is not on the board of any other companies')
