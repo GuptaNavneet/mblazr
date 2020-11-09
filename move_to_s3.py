@@ -1,13 +1,13 @@
 from boto3 import resource
 import os
 from edgarapp.static.routine.config import AccesseyID,Secret,bucket_name
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
 
-directory = '/mnt/filings-static/capitalrap/edgarapp/static/filings/'
-
+#directory = '/mnt/filings-static/capitalrap/edgarapp/static/filings/'
+directory = os.path.join(BASE_DIR, 'edgarapp/static/filings/')
 try:
     for subdir, dirs, files in os.walk(directory):
         for filename in files:
