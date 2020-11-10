@@ -30,8 +30,9 @@ from .models import Company, Directors, Executives, Filing, Funds, Proxies
 from .utils import TOCAlternativeExtractor, Printer
 from .readfiling import readFiling
 from django.views.decorators.clickjacking import xframe_options_exempt
-def handler404(request, *args, **argv):
 
+
+def handler404(request, *args, **argv):
     extended_template = 'base.html'
     if request.user.is_authenticated:
         extended_template = 'base_member.html'
@@ -56,8 +57,8 @@ def HomePageView(request):
 
 
 def SearchResultsView(request):
-    #model = Company, Filing, Funds, Directors, Proxies, Executives
-    #template_name  = 'companyOverview.html'
+    # model = Company, Filing, Funds, Directors, Proxies, Executives
+    # template_name  = 'companyOverview.html'
 
     extended_template = 'base_company.html'
     if request.user.is_authenticated:
@@ -66,24 +67,21 @@ def SearchResultsView(request):
     query = request.GET.get('q')
     print(query)
 
-
-
     if not request.user.is_authenticated:
         # print("done")
         if query != 'TSLA':
-            messages.error(request,'To search for other Tickers,')
+            messages.error(request, 'To search for other Tickers,')
             return render(
-            request, 'home.html',
-            {'extended_template': extended_template}
+                request, 'home.html',
+                {'extended_template': extended_template}
             )
     mycompany = Company.objects.get(ticker=query)
 
     filing = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate').latest('filingdate');
 
+    return HttpResponseRedirect('/filing/?q=' + query + '&fid=' + str(filing.cik))
 
-    return HttpResponseRedirect('/filing/?q=' + query +'&fid='+str(filing.cik))
-
-    #-------------no need to carry out the other searches as they are expensive-----------------------"
+    # -------------no need to carry out the other searches as they are expensive-----------------------"
     # filings = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate')
     # proxies = Proxies.objects.filter(cik=mycompany.cik).order_by('-filingdate')
     # name = mycompany.name
@@ -164,11 +162,10 @@ def SearchResultsView(request):
 
     # object_list is (q, (companyname, ticker), (filings object))
     # if request.user.is_authenticated:
-    #print(object_list)
+    # print(object_list)
 
     latest_filing = []
-    #for file in filings:
-
+    # for file in filings:
 
     # filing = Filing.objects.filter(cik=mycompany.cik).order_by('-filingdate').first()
     # print(filing)
@@ -183,16 +180,15 @@ def SearchResultsView(request):
     #         table_of_contents = extract_data.table
     #     except:
     #        table_of_contents = ""
-    #'filing_html': filing_html,'table_of_contents': table_of_contents
+    # 'filing_html': filing_html,'table_of_contents': table_of_contents
 
-
-    #return render(
-        #request, template_name,
-        #{'object_list': object_list, 'extended_template': extended_template,
-       #  'table_of_contents': table_of_contents,
-      #   'filing_html': filing_html
-     #    }
-    #)
+    # return render(
+    # request, template_name,
+    # {'object_list': object_list, 'extended_template': extended_template,
+    #  'table_of_contents': table_of_contents,
+    #   'filing_html': filing_html
+    #    }
+    # )
     # else:
     #     if query == 'HD':
     #         return render(
@@ -214,49 +210,47 @@ def SearchFilingView(request):
     matches = []
     exectable = []
 
-   
-
-    #Check to ensure query value is not empty if empty we search for tesla
+    # Check to ensure query value is not empty if empty we search for tesla
     if request.GET.get('q') != None or request.GET.get('q') != '':
         query = request.GET.get('q')
     else:
         query = 'TSLA'
 
-
-
-
-
-
-    #user is not logged in and
+    # user is not logged in and
     # they are not searching for Tesla
-    if not request.user.is_authenticated and query != 'TSLA' :
-     #redirect them to login
-         return redirect('/accounts/login/?next='+query)
+    if not request.user.is_authenticated and query != 'TSLA':
+        # redirect them to login
+        return redirect('/accounts/login/?next=' + query)
 
-    elif request.user.is_authenticated or ( not request.user.is_authenticated and query == 'TSLA') :
-        #user is authenticated or they are not authenticated but are searching for Tesla
-    #check if query sqtring has valid arguments
-      company_filings = Filing.objects.filter(company__ticker=query)
+    elif request.user.is_authenticated or (not request.user.is_authenticated and query == 'TSLA'):
+        # user is authenticated or they are not authenticated but are searching for Tesla
+        # check if query sqtring has valid arguments
+
+        if Filing.objects.filter(company__ticker=query).first()==None:
+            company_filings = Filing.objects.filter(company__ticker='TSLA')
+        else:
+            company_filings = Filing.objects.filter(company__ticker=query)
+
+        fid = request.GET.get('fid')
+        if fid == 'all':
+            # query string fetches the latest filing
+            filing = company_filings.first()
 
 
-      fid = request.GET.get('fid')
-      if fid=='all':
-        #query string fetches the latest filing
-        filing = company_filings.first()
+            # the latest filing is being recieved
+        else:
+            # normal fid is in place
 
-         # the latest filing is being recieved
+            filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
-      else:
-        #normal fid is in place
 
-        filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
+        company_filings = [filing.dict_values() for filing in company_filings]
 
-      company_filings = [filing.dict_values() for filing in company_filings]
-    
     links = []
     verify = []
 
     company = filing.company
+
     #   name = mycompany.name
     #   name = name.upper()
     #   name = name.replace('INTERNATIONAL', 'INTL')
@@ -265,12 +259,10 @@ def SearchFilingView(request):
     #   name = name.replace('INC.', 'INC')
     #   name = name.replace(',', '')
 
-
-
     #   funds = Funds.objects.raw(
     #     'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
     funds = company.funds.all()[:100]
-        # 'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
+    # 'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
 
     # directors = Directors.objects.filter(company=mycompany.name).order_by('-director')
     directors = company.company_directors.all()
@@ -325,8 +317,6 @@ def SearchFilingView(request):
     # if not comps:
     #     comps.append('Director is not on the board of any other companies')
     # matches.append(comps)
-    
-    
 
     object_list = []
     # object_list.append((query, fid))
@@ -337,23 +327,33 @@ def SearchFilingView(request):
     # object_list.append(zip(directors, matches))
     # object_list.append(zip(exectable, matches))
     # object_list.append(links)
-    
+
     company_name = company.name
     company_ticker = company.ticker
-    
-    #url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
-    url = readFiling(filing.filingpath)
+
+    # url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
+    file_recieved = readFiling(filing.filingpath)
 
     t_o_c = filing.table_of_contents.first()
-    
-    if not t_o_c:
-      
+
+    # t_o_c = {'body':''}
+
+    if not t_o_c and len(file_recieved) > 1:
+
         toc_extractor = TOCAlternativeExtractor()
 
-        extract_data = toc_extractor.extract(url)
+        extract_data = toc_extractor.extract(file_recieved)
 
         t_o_c = filing.table_of_contents.create(body=extract_data.table)
+        print('toc')
+    elif len(file_recieved) < 1:
+        t_o_c = {'a': ''}
+        t_o_c['body'] = ''
 
+    try:
+        updatedtoc=t_o_c.body
+    except:
+        updatedtoc=''
 
 
     return render(
@@ -367,20 +367,27 @@ def SearchFilingView(request):
             'current_filing': filing,
             'funds': funds,
             'extended_template': extended_template,
-            'table_of_contents': t_o_c.body,
+            'table_of_contents': updatedtoc,
             'fid': filing.id,
-            'filepath':filing.filingpath
+            'filepath': filing.filingpath
 
         }
     )
-@xframe_options_exempt
-def filing_fetch(request,id,file):
 
+
+@xframe_options_exempt
+def filing_fetch(request, id, file):
     try:
-      data = readFiling(str(id)+'/'+str(file))
-      return HttpResponse(status=200,content_type="text/html",content=data)
+        data = readFiling(str(id) + '/' + str(file))
+        if len(data) < 1:
+            data = '<html><head><body><h4 style="text-align:center">Filing not available currently.Please check back later</h4></body></head></html>'
+
+        return HttpResponse(status=200, content_type="text/html", content=data)
     except:
-        return HttpResponse(status=500,content_type="text/html ",content="<h3 style='text-align:center'>Something went wrong while we were getting the filings</h3>")
+        return HttpResponse(status=500, content_type="text/html ",
+                            content="<h3 style='text-align:center'>Something went wrong while we were getting the filings.Please chack back later</h3>")
+
+
 def AboutView(request):
     template_name = 'about.html'
     extended_template = 'base.html'
@@ -419,11 +426,11 @@ def FaqView(request):
         {'extended_template': extended_template}
     )
 
+
 # for contact
 
 
 def contactView(request):
-
     form = ContactForm(request.POST or None)
 
     extended_template = 'base.html'
@@ -434,10 +441,10 @@ def contactView(request):
         name = form.cleaned_data.get("name")
         email = form.cleaned_data.get("email")
         message = form.cleaned_data.get("message")
-        subject = "CapitalRap Contact Form: "+name
+        subject = "CapitalRap Contact Form: " + name
 
         comment = name + " with the email, " + email + \
-            ", sent the following message:\n\n" + message
+                  ", sent the following message:\n\n" + message
         send_mail(subject, comment, settings.EMAIL_HOST_USER,
                   [settings.EMAIL_HOST_USER])
 
@@ -485,10 +492,10 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         login(request, user)
 
-        if request.GET.get('next') == None :
+        if request.GET.get('next') == None:
             return redirect('home')
         else:
-            return redirect('/filing/?q='+request.GET.get('next') + '&fid=all')
+            return redirect('/filing/?q=' + request.GET.get('next') + '&fid=all')
     return render(request, "form.html", {
         "form": form,
         "title": "Login",
@@ -550,20 +557,19 @@ def PlanView(request):
     extended_template = 'base.html'
     if request.user.is_authenticated:
         extended_template = 'base_member.html'
-    return render(request, 'plan.html',{'extended_template': extended_template,
-    })
+    return render(request, 'plan.html', {'extended_template': extended_template,
+                                         })
 
 
 def PrinterView(request, fid, start):
-
     try:
-     filing = Filing.objects.get(id=fid)
+        filing = Filing.objects.get(id=fid)
     except:
-        return HttpResponse(status=404,content="Requested Filing Could not be Found for printing")
+        return HttpResponse(status=404, content="Requested Filing Could not be Found for printing")
 
     url = readFiling(filing.filingpath)
-    if start=='full':
-        return HttpResponseRedirect('/getfiling/'+filing.filingpath)
+    if start == 'full':
+        return HttpResponseRedirect('/getfiling/' + filing.filingpath)
     else:
         printer = Printer().generate(url, start)
 

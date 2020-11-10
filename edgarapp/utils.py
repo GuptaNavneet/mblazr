@@ -23,13 +23,14 @@ class TOCAlternativeExtractor(object):
 
     html = ''
 
-    def extract(self, url):
+    def extract(self, rec_data):
 
-        with open(url) as file:
-            html = file.read()
-            self.html = html
-        
-        self.url = url
+        # with open(url) as file:
+        #     html = file.read()
+        #     self.html = html
+        html = rec_data
+        self.html = rec_data
+        self.url = rec_data
 
         links = self._get_alternative_links(html)
 

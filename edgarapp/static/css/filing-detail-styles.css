@@ -45,7 +45,7 @@
     } */
     .center-btn #shortcts{
      float:right;
-     
+
     }
     .center-btn a{
      background-color:white;
@@ -57,12 +57,8 @@
     }
     .center-btn a:hover{
         text-decoration:none;
-      
+
     }
-.center-btn #title{
- 
-    margin-left:15%;
-}
 
     .bs-example {
         font-family: sans-serif;
@@ -169,7 +165,7 @@
     .fl-table td, .fl-table th {
         padding: 10px;
         text-transform:capitalize;
-              
+
     }
 
     .fl-table td {
@@ -190,7 +186,7 @@
     }
      .fl-table thead th:first-child {
          text-align:left;
-         
+
     }
 
     .fl-table tr:nth-child(even) {
@@ -600,7 +596,7 @@
  .document-view-section{
      position:relative;
      overflow:scroll;
-     padding:0px 60px;
+     padding:5px 60px;
      top:1vh;
       overflow-y:scroll;
       height:95vh;
