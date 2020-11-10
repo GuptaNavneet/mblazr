@@ -290,8 +290,8 @@
                               <p>{{person.bio}}</p>
                             </td>
                             <td id = "director" class="directorCol" >
-                              {% for comp in comps %}
-                                <center>{{ comp }}</center>
+                              {% for comp in person.other_companies.all %}
+                                <center>{{ comp.name }}</center>
                               {% endfor %}
                             </td>
                           </tr>
