@@ -110,3 +110,11 @@ class Executives(models.Model):
 class FilingTOC(models.Model):
 	body = models.TextField()
 	filing = models.ForeignKey(Filing, on_delete=models.SET_NULL,null=True, related_name='table_of_contents')
+class FilingsExhibits(models.Model):
+	exhib_type = models.CharField(max_length=255)
+	exhib_date = models.CharField(max_length=255)
+	exhib_path = models.CharField(max_length=255)
+	company_cik = models.CharField(max_length=255)
+
+	def __str__(self):
+		return self.company_cik
