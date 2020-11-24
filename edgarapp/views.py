@@ -26,10 +26,11 @@ from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
-from .models import Company, Directors, Executives, Filing, Funds, Proxies
+from .models import Company, Directors, Executives, Filing, Funds, Proxies,FilingsExhibits
 from .utils import TOCAlternativeExtractor, Printer
-from .readfiling import readFiling
+from .readfiling import readFiling,toc_exctract
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def handler404(request, *args, **argv):
@@ -65,7 +66,6 @@ def SearchResultsView(request):
         extended_template = 'base_company_member.html'
 
     query = request.GET.get('q')
-    print(query)
 
     if not request.user.is_authenticated:
         # print("done")
@@ -198,7 +198,7 @@ def SearchResultsView(request):
     #     else:
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
-
+#print(Filing.objects.filter(cik=comp_searched[0].cik, id=fid)[0])
 @gzip_page
 def SearchFilingView(request):
     template_name = 'companyFiling.html'
@@ -225,31 +225,37 @@ def SearchFilingView(request):
     elif request.user.is_authenticated or (not request.user.is_authenticated and query == 'TSLA'):
         # user is authenticated or they are not authenticated but are searching for Tesla
         # check if query sqtring has valid arguments
-
-        if Filing.objects.filter(company__ticker=query).first()==None:
-            company_filings = Filing.objects.filter(company__ticker='TSLA')
-        else:
-            company_filings = Filing.objects.filter(company__ticker=query)
+        try:
+            comp_searched = Company.objects.filter(ticker=str(query))
+        except ObjectDoesNotExist:
+            comp_searched = Company.objects.all()
+        except Exception as e:
+            print(e)
+            comp_searched = Company.objects.all()
 
         fid = request.GET.get('fid')
+        Filings_list = Filing.objects.all()
         if fid == 'all':
             # query string fetches the latest filing
-            filing = company_filings.first()
 
+            filing = Filing.objects.filter(cik=comp_searched[0].cik).first()
 
             # the latest filing is being recieved
         else:
             # normal fid is in place
 
-            filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
+            filing = Filing.objects.filter(cik=comp_searched[0].cik, id=fid)[0]  # the filing was requested by fid
+            print("Filing was using id")
 
-
-        company_filings = [filing.dict_values() for filing in company_filings]
+        company_filings = [filing.dict_values() for filing in Filings_list]
+        # print(company_filings)
 
     links = []
     verify = []
 
-    company = filing.company
+    company = filing.name
+    company_ticker = comp_searched[0].ticker
+    print("company searched "+str(comp_searched[0].name))
 
     #   name = mycompany.name
     #   name = name.upper()
@@ -259,18 +265,18 @@ def SearchFilingView(request):
     #   name = name.replace('INC.', 'INC')
     #   name = name.replace(',', '')
 
-    #   funds = Funds.objects.raw(
-    #     'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
-    funds = company.funds.all()[:100]
+    # funds = Funds.objects.raw(
+    #   'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
+    funds = Funds.objects.filter(company=company)[:100]
     # 'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
 
     # directors = Directors.objects.filter(company=mycompany.name).order_by('-director')
-    directors = company.company_directors.all()
+    directors = Directors.objects.filter(company=company)
 
     # allDirectors = Directors.objects.all()
 
-    # executives = Executives.objects.filter(company=mycompany.name)
-    executives = company.executives.all()
+    executives = Executives.objects.filter(company=company)
+    # executives = company.executives.all()
 
     # today = datetime.today()
     # currYear = today.year
@@ -328,32 +334,39 @@ def SearchFilingView(request):
     # object_list.append(zip(exectable, matches))
     # object_list.append(links)
 
-    company_name = company.name
-    company_ticker = company.ticker
+    company_name = company
+    # company_ticker = company
 
     # url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
-    file_recieved = readFiling(filing.filingpath)
+    # print(filing.filingpath.split('files/')[1])
+    #print("Now looking for toc")
+    file_recieved = readFiling(filing.filingpath)  # readFiling(filing.filingpath.split('files/')[1])  for mblazr
+    exctracted_toc = toc_exctract(file_recieved)
+    #print("Done looking for toc")
+    # t_o_c = filing.table_of_contents.first()
+    # print(t_o_c)
+    # t_o_c =None;
+    # if not t_o_c :
+    #
+    #     toc_extractor = TOCAlternativeExtractor()
+    #
+    #     extract_data = toc_extractor.extract(file_recieved)
+    #     t_o_c = filing.table_of_contents.create(body=extract_data.table)
+    #     print('--resulf for toc ---')
+    #     print(t_o_c.body)
+    # updatedtoc =t_o_c.body
 
-    t_o_c = filing.table_of_contents.first()
+    # elif len(file_recieved) < 1:
+    #     t_o_c = {'a': ''}
+    #     t_o_c['body'] = ''
+    #
+    # try:
+    #     updatedtoc=t_o_c.body
+    # except:
+    #     updatedtoc=''
 
-    # t_o_c = {'body':''}
+    # -----------------new toc------#
 
-    if not t_o_c and len(file_recieved) > 1:
-
-        toc_extractor = TOCAlternativeExtractor()
-
-        extract_data = toc_extractor.extract(file_recieved)
-
-        t_o_c = filing.table_of_contents.create(body=extract_data.table)
-        print('toc')
-    elif len(file_recieved) < 1:
-        t_o_c = {'a': ''}
-        t_o_c['body'] = ''
-
-    try:
-        updatedtoc=t_o_c.body
-    except:
-        updatedtoc=''
 
 
     return render(
@@ -367,20 +380,20 @@ def SearchFilingView(request):
             'current_filing': filing,
             'funds': funds,
             'extended_template': extended_template,
-            'table_of_contents': updatedtoc,
-            'fid': filing.id,
+            'table_of_contents': exctracted_toc,#prep,  # t_o_c.body,#updatedtoc,
+            'fid': filing.cik,
             'filepath': filing.filingpath
 
         }
     )
 
-
 @xframe_options_exempt
 def filing_fetch(request, id, file):
     try:
         data = readFiling(str(id) + '/' + str(file))
+
         if len(data) < 1:
-            data = '<html><head><body><h4 style="text-align:center">Filing not available currently.Please check back later</h4></body></head></html>'
+            data = '<html></head><head><body><h4 style="text-align:center">Filing not available currently.Please check back later</h4></body></html>'
 
         return HttpResponse(status=200, content_type="text/html", content=data)
     except:
