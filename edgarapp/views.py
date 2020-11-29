@@ -198,9 +198,106 @@ def SearchResultsView(request):
     #     else:
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
-#print(Filing.objects.filter(cik=comp_searched[0].cik, id=fid)[0])
+
 @gzip_page
 def SearchFilingView(request):
+    template_name = 'companyFiling.html'
+    extended_template = 'base_company.html'
+    global filing_to_display,filings_list
+    q_company = request.GET.get('q')
+    q_filing = request.GET.get('fid')
+    if q_company == '' or q_company == None:
+        q_company='TSLA'
+
+    if q_filing=='' or q_filing == None:
+        q_filing='all'
+    else:
+        try:
+            int(q_filing)
+        except:
+            q_filing='all'
+
+
+
+    #Authentication here
+    if not request.user.is_authenticated and q_company != 'TSLA':
+        # redirect them to login
+        return redirect('/accounts/login/?next=' + q_company)
+
+    elif request.user.is_authenticated or (not request.user.is_authenticated and q_company == 'TSLA'):
+        #Check query being searched
+        company_search = Company.objects.filter(ticker=q_company)
+
+        if len(company_search)>0:
+            #Company is valid
+            filings_for_company = Filing.objects.filter(cik=company_search[0].cik)
+
+            if len(filings_for_company)>0:
+                filings_list=[]
+                #Prepare Filings List (to didplay on left side)
+                for myfiling in filings_for_company:
+                    filings_list.append(myfiling.dict_values())
+
+                #We have filings for that Company
+                if q_filing == 'all':
+                    filing_to_display = filings_for_company[0]
+                else:
+                    result_for_fid = Filing.objects.filter(cik=company_search[0].cik,id=q_filing)
+                    if len(result_for_fid)==1:
+                      filing_to_display =result_for_fid[0]
+                    else:
+                      #Output First Filing automaticaly
+                      filing_to_display = filings_for_company[0]
+
+
+                #Now we have filings as well as complete company info
+                company_cik = company_search[0].cik
+                company_name = company_search[0].name
+                company_ticker =company_search[0].ticker
+
+                #Get directors,executives,funds
+                funds = Funds.objects.filter(company=company_name)[:100]
+                directors = Directors.objects.filter(company=company_name)
+                executives = Executives.objects.filter(company=company_name)
+
+                object_list=[]
+                #Fetch file and prepare TOC
+
+                path_of_filing = str(company_cik) +'/'+  str(filing_to_display.filingpath).split('/')[-1]
+
+                fetched_filing = readFiling(path_of_filing)
+                filing_toc = toc_exctract(fetched_filing)
+                print(filing_toc)
+
+
+                return render(
+                    request, template_name, {
+                        'object_list': object_list,
+                        'company_filings': filings_list,
+                        'company_ticker': company_ticker,
+                        'directors': directors,
+                        'executives': executives,
+                        'company_name': company_name,
+                        'current_filing': filing_to_display,
+                        'funds': funds,
+                        'extended_template': extended_template,
+                        'table_of_contents': filing_toc,  # prep,  # t_o_c.body,#updatedtoc,
+                        'fid': company_cik,
+                        'filepath': path_of_filing
+
+                    })
+            else:
+            # We dont have any Filings for that Company
+              return HttpResponse(status=404,content='<h3 style="text-align:center">No filings for '+str(company_search[0].name)+ ' was found.Check back later',content_type='text/html')
+        else:
+            #Company could Not be found so redirect to home page
+            return HttpResponseRedirect('/')
+
+
+
+
+@gzip_page
+def SearchFilingView2(request):
     template_name = 'companyFiling.html'
 
     extended_template = 'base_company.html'
