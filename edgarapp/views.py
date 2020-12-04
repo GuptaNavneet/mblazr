@@ -24,13 +24,15 @@ from django.templatetags.static import static
 from django.utils.translation import ugettext as _
 from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
-
+import mysql.connector, requests, os, os.path
+from mysql.connector import Error, errorcode
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
 from .models import Company, Directors, Executives, Filing, Funds, Proxies,FilingsExhibits
 from .utils import TOCAlternativeExtractor, Printer
 from .readfiling import readFiling,toc_exctract
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from .config2 import  password,user,host,database
 
 
 def handler404(request, *args, **argv):
@@ -234,10 +236,10 @@ def SearchFilingView(request):
 
             if len(filings_for_company)>0:
                 filings_list=[]
+
                 #Prepare Filings List (to didplay on left side)
                 for myfiling in filings_for_company:
                     filings_list.append(myfiling.dict_values())
-
                 #We have filings for that Company
                 if q_filing == 'all':
                     filing_to_display = filings_for_company[0]
@@ -264,11 +266,18 @@ def SearchFilingView(request):
                 #Fetch file and prepare TOC
 
                 path_of_filing = str(company_cik) +'/'+  str(filing_to_display.filingpath).split('/')[-1]
-
                 fetched_filing = readFiling(path_of_filing)
-                filing_toc = toc_exctract(fetched_filing)
-                print(filing_toc)
+                #filing_toc = toc_exctract(fetched_filing)
+                filings_toc =''
+                #print(filing_toc)
+                #t_o_c = filing_to_display.table_of_contents.first()
+                #if not t_o_c :
+                toc_extractor = TOCAlternativeExtractor()
+                extract_data = toc_extractor.extract(fetched_filing)
+                t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
 
+                #print(type(t_o_c.body))
+                filing_toc =t_o_c.body
 
                 return render(
                     request, template_name, {
@@ -287,10 +296,95 @@ def SearchFilingView(request):
 
                     })
             else:
-            # We dont have any Filings for that Company
-              return HttpResponse(status=404,content='<h3 style="text-align:center">No filings for '+str(company_search[0].name)+ ' was found.Check back later',content_type='text/html')
+            # We dont have any Filings for that Company in Latest Db
+            #Check in old DB now
+
+                connection = mysql.connector.connect(host=host,#'172.104.7.112',
+                                                     database= database,#'edgarDataLatest',#'edgarData',#'edgarDataLatest',  #'edgarData',
+                                                     user=user,
+                                                     password=password
+                                                     ,auth_plugin='mysql_native_password'
+                                                      )
+
+                cursor = connection.cursor(buffered=False)
+                company_cik =company_search[0].cik
+                #print("Now looking in Old Db with cik" + str(company_cik))
+
+                cursor.execute('SELECT * FROM edgarapp_filing WHERE cik = '+ str(company_cik))
+                all_records =cursor.fetchall()
+                #print(all_records)
+                filings_list = []
+                if len(all_records)>0:
+                    for record in all_records:
+                       filings_list.append({'id':12,'type':record,'date':record})
+                        #Redo the Stuff
+                    if q_filing == 'all':
+                           filing_to_display = all_records[0]
+                           print(filing_to_display)
+                    else:
+                           cursor.execute('SELECT * FROM edgarapp_filing WHERE cik = '+ str(company_cik) +'and id =' +str(q_filing) )
+                           result_for_fid =cursor.fetchall()#Filing.objects.filter(cik=company_search[0].cik, id=q_filing)
+                           if len(result_for_fid) == 1:
+                               filing_to_display = result_for_fid[0]
+                           else:
+                               # Output First Filing automaticaly
+                               filing_to_display =  all_records[0]#filings_for_company[0]
+
+                       # Now we have filings as well as complete company info
+                    #print(filing_to_display)
+                    company_cik = company_search[0].cik
+                    company_name = company_search[0].name
+                    company_ticker = company_search[0].ticker
+
+                  # Get directors,executives,funds
+                    funds = Funds.objects.filter(company=company_name)[:100]
+                    directors = Directors.objects.filter(company=company_name)
+                    executives = Executives.objects.filter(company=company_name)
+
+                    object_list = []
+                   # Fetch file and prepare TOC
+
+                    path_of_filing = str(company_cik) + '/' + str(filing_to_display[4]).split('/')[-1]
+
+                    fetched_filing = readFiling(path_of_filing)
+                    print("Finished fetching from s3")
+                   #filing_toc = toc_exctract(fetched_filing)
+                   #t_o_c = filing_to_display.table_of_contents.first()
+                   #if not t_o_c:
+                    toc_extractor = TOCAlternativeExtractor()
+                    extract_data = toc_extractor.extract(fetched_filing)
+                    t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+
+                   # print(type(t_o_c.body))
+                    print("Finished Finding TOC")
+
+                    filing_toc = t_o_c.body
+                   #print(filing_toc)
+
+                    return render(
+                       request, template_name, {
+                           'object_list': object_list,
+                           'company_filings': filings_list,
+                           'company_ticker': company_ticker,
+                           'directors': directors,
+                           'executives': executives,
+                           'company_name': company_name,
+                           'current_filing': filing_to_display,
+                           'funds': funds,
+                           'extended_template': extended_template,
+                           'table_of_contents': filing_toc,  # prep,  # t_o_c.body,#updatedtoc,
+                           'fid': company_cik,
+                           'filepath': path_of_filing
+
+                       })
+
+
+                else:
+                    #No filing in Od Db as well
+                    return HttpResponse(status=404,content='<h3 style="text-align:center">No filings for '+str(company_search[0].name)+ ' was found.Check back later',content_type='text/html')
         else:
             #Company could Not be found so redirect to home page
+
             return HttpResponseRedirect('/')
 
 
