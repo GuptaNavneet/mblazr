@@ -8,7 +8,6 @@ from argparse import Namespace
 
 import unicodedata
 
-
 '''
 Table of Contents Extractor
 
@@ -18,7 +17,6 @@ This class takes a filing html file as input and return the table of contents
 
 
 class TOCAlternativeExtractor(object):
-    
     exhibit_end = -1
 
     html = ''
@@ -28,18 +26,18 @@ class TOCAlternativeExtractor(object):
         # with open(url) as file:
         #     html = file.read()
         #     self.html = html
-        html = rec_data
-        self.html = rec_data
+        html = str(rec_data)
+        self.html = str(html)
         self.url = rec_data
 
-        links = self._get_alternative_links(html)
+        links = self._get_alternative_links(self.html)
 
         links += self._get_exhibits(self.html)
 
         data = Namespace(table=links)
 
         self.save_html(self.html)
-
+        #print(type(data))
         return data
 
     def _get_exhibits(self, html):
@@ -48,10 +46,10 @@ class TOCAlternativeExtractor(object):
 
         if exhibit_end == -1:
             exhibit_end = html.find("exhibits='true'")
-        
+
         if exhibit_end == -1: return ""
-            
-        html = html.replace( html[:exhibit_end], '')
+
+        html = html.replace(html[:exhibit_end], '')
 
         soup = BeautifulSoup(html, features='lxml')
 
@@ -66,13 +64,12 @@ class TOCAlternativeExtractor(object):
             link_text = link.get_text()
 
             if not link_text: continue
-                        
+
             if 'table of content' in link_text.lower(): continue
 
             href = link.get('href')
 
             if href and href not in distinct_exhibits:
-
                 href_text = href.split('/')[-1]
 
                 exhibits += f"<a href='{href}' class='exhibit-link' target='_blank'>EX-{exhibit_counter} {href_text}</a>"
@@ -88,21 +85,20 @@ class TOCAlternativeExtractor(object):
         return heading + exhibits
 
     def _get_alternative_links(self, html):
+        myhtml = str(html)
+        default_table = self._get_toc(myhtml)
 
-        default_table = self._get_toc(html)
-
-        
         if default_table:
-            html = html.replace(default_table, '[[REMOVED_TABLE]]')
-        
+            html = str(myhtml).replace(default_table, '[[REMOVED_TABLE]]')
+
         modified_soup = BeautifulSoup(html, 'lxml')
 
         new_soup = ''
 
         def is_bold(tag):
-            
+
             tag_text = tag.get_text().lower().strip()
-            
+
             if not tag_text:
                 return False
 
@@ -114,9 +110,10 @@ class TOCAlternativeExtractor(object):
 
             style_text = tag.get('style')
 
-            if tag.name != 'b' and not ('font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text):
+            if tag.name != 'b' and not (
+                    'font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text):
                 return False
-                        
+
             split_text = tag_text.split()
 
             if len(split_text) <= 1:
@@ -125,7 +122,8 @@ class TOCAlternativeExtractor(object):
             if split_text and split_text[0] not in ('item', 'items', 'note', 'part'):
                 return False
 
-            if split_text[1] not in ('i', 'i.', 'ii', 'ii.', 'iii', 'iii.', 'iv', 'v', 'vi', 'vii',) and not split_text[1][0].isdigit():
+            if split_text[1] not in ('i', 'i.', 'ii', 'ii.', 'iii', 'iii.', 'iv', 'v', 'vi', 'vii',) and not \
+            split_text[1][0].isdigit():
                 return False
 
             return True
@@ -145,7 +143,7 @@ class TOCAlternativeExtractor(object):
         headings_list = []
 
         for tag in headings:
-            
+
             tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
 
             tag_text_lower = tag_text.lower()
@@ -176,10 +174,10 @@ class TOCAlternativeExtractor(object):
                 continue
 
             headings_list.append(tag_text_lower)
-                
+
             tag_first_word = tag_text_lower.split()[0]
             tag_class = tag_first_word if tag_first_word != 'items' else 'item'
-            
+
             tag_id = tag_class + str(tag_dict[tag_class])
             tag['id'] = tag_id
 
@@ -201,20 +199,20 @@ class TOCAlternativeExtractor(object):
             id_counter += 1
 
             if id_counter == num_of_headings and self.exhibit_end == -1:
-                tag['exhibits'] = 'true'            
-            
+                tag['exhibits'] = 'true'
+
             tag['data-print-type'] = tag_class
 
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
-            
-        
-        self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
-
+        try:
+         self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
+        except:
+         self.html =''
         return new_soup
 
     def _get_toc(self, html):
 
-        text = html
+        text = str(html)
 
         start = text.find("SECURITIES AND EXCHANGE COMMISSION")
 
@@ -231,7 +229,7 @@ class TOCAlternativeExtractor(object):
         if links:
             links = links[0]
 
-            link = links[links.find('#')+1:]
+            link = links[links.find('#') + 1:]
 
             pos = text.find(f'id="{link}"')
 
@@ -246,32 +244,32 @@ class TOCAlternativeExtractor(object):
 
         # if pos == -1:
         #     pos = text.lower().find('<hr style="page-break-after:always"')
-        
+
         if pos == -1:
             return ''
-        
+
         text = text[pos:]
 
         end_pos = text.lower().find('</table>')
-        
+
         if pos != -1 and end_pos != -1:
-            text = text[:end_pos+8]
-        
+            text = text[:end_pos + 8]
+
         else:
             return ''
 
         return text
 
     def save_html(self, html):
+        return None
 
-        with open(self.url, 'w') as file:
-            file.write(html)
+        #with open(self.url, 'w') as file:
+            #file.write(html)
 
 
 class Printer(object):
 
     def generate(self, url, content_type):
-
         with open(url) as file:
             html = file.read()
 
@@ -279,8 +277,8 @@ class Printer(object):
 
         res = soup.find(attrs={'id': content_type})
 
-        start_tag_str = str(res) 
-        
+        start_tag_str = str(res)
+
         del soup
         del res
 
@@ -292,7 +290,7 @@ class Printer(object):
         end_word = end_word.lower()
 
         html = html.replace(f'data-print-type="{end_word}"', '', 1)
-        
+
         end = html.find(f'data-print-type="{end_word}"')
 
         html = html[:end]
