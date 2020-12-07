@@ -37,7 +37,7 @@ class TOCAlternativeExtractor(object):
         data = Namespace(table=links)
 
         self.save_html(self.html)
-        #print(type(data))
+
         return data
 
     def _get_exhibits(self, html):
@@ -86,6 +86,7 @@ class TOCAlternativeExtractor(object):
 
     def _get_alternative_links(self, html):
         myhtml = str(html)
+
         default_table = self._get_toc(myhtml)
 
         if default_table:
@@ -204,6 +205,7 @@ class TOCAlternativeExtractor(object):
             tag['data-print-type'] = tag_class
 
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
+
         try:
          self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
         except:
