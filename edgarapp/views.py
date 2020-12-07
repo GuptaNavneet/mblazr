@@ -32,7 +32,7 @@ from .utils import TOCAlternativeExtractor, Printer
 from .readfiling import readFiling,toc_exctract
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.exceptions import ObjectDoesNotExist
-from .config import  password,user,host,database
+#from .config import  password,user,host,database
 
 def handler404(request, *args, **argv):
     extended_template = 'base.html'
