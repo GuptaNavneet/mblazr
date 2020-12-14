@@ -197,8 +197,129 @@ def SearchResultsView(request):
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
 
+
+
 @gzip_page
 def SearchFilingView(request):
+    template_name = 'companyFiling.html'
+    extended_template = 'base_company.html'
+    global filing_to_display,filings_list
+    q_company = request.GET.get('q')
+    q_filing = request.GET.get('fid')
+    if q_company == '' or q_company == None:
+        q_company='TSLA'
+
+    if q_filing=='' or q_filing == None:
+        q_filing='all'
+    else:
+        try:
+            int(q_filing)
+        except:
+            q_filing='all'
+
+
+
+    #Authentication here
+    if not request.user.is_authenticated and q_company != 'TSLA':
+        # redirect them to login
+        return redirect('/accounts/login/?next=' + q_company)
+
+    elif request.user.is_authenticated or (not request.user.is_authenticated and q_company == 'TSLA'):
+        #Check query being searched
+        company_search = Company.objects.filter(ticker=q_company)
+
+        if len(company_search)>0:
+            #Company is valid
+            filings_for_company = Filing.objects.filter(cik=company_search[0].cik)
+
+            if len(filings_for_company)>0:
+                filings_list=[]
+
+                #Prepare Filings List (to didplay on left side)
+                for myfiling in filings_for_company:
+                    filings_list.append(myfiling.dict_values())
+                #We have filings for that Company
+                if q_filing == 'all':
+                    filing_to_display = filings_for_company[0]
+                else:
+                    result_for_fid = Filing.objects.filter(cik=company_search[0].cik,id=q_filing)
+                    if len(result_for_fid)==1:
+                      filing_to_display =result_for_fid[0]
+                    else:
+                      #Output First Filing automaticaly
+                      filing_to_display = filings_for_company[0]
+
+
+                #Now we have filings as well as complete company info
+                company_cik = company_search[0].cik
+                company_name = company_search[0].name
+                company_ticker =company_search[0].ticker
+
+                #Get directors,executives,funds
+                funds = Funds.objects.filter(company=company_name)[:100]
+                directors = Directors.objects.filter(company=company_name)
+                executives = Executives.objects.filter(company=company_name)
+
+                object_list=[]
+
+                #Fetch file and prepare TOC
+                #Check  the Filing Data
+                # all_parts = str(filing_to_display.filingpath).split('/')
+                #
+                # path_to_extract_toc =''
+                # path_of_filing =''
+                #
+                # if(len(all_parts)==4): #filings/files/val/file.ht
+                #     path_to_extract_toc = str(filing_to_display.filingpath).split('/')[2]+'/'+ str(filing_to_display.filingpath).split('/')[-1]
+                #     path_of_filing = path_to_extract_toc
+                # elif (len(all_parts)==2): #cikvalue/file.htm
+                #     path_to_extract_toc = str(filing_to_display.filingpath)
+                #     path_of_filing =path_to_extract_toc
+                #
+                # fetched_filing = readFiling(path_to_extract_toc)
+
+                #print(fetched_filing)
+                # #t_o_c = filing_to_display.table_of_contents.first()
+                # #if not t_o_c :
+                url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing_to_display.filingpath
+
+                #t_o_c = filing.table_of_contents.first()
+
+                #if not t_o_c:
+                toc_extractor = TOCAlternativeExtractor()
+
+                extract_data = toc_extractor.extract(url)
+
+                t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+
+                return render(
+                    request, template_name, {
+                        'object_list': object_list,
+                        'company_filings': filings_list,
+                        'company_ticker': company_ticker,
+                        'directors': directors,
+                        'executives': executives,
+                        'company_name': company_name,
+                        'current_filing': filing_to_display,
+                        'funds': funds,
+                        'extended_template': extended_template,
+                        'table_of_contents': t_o_c.body,  # prep,  # t_o_c.body,#updatedtoc,
+                        'fid': company_cik,
+                        #'filepath': path_of_filing
+
+                    })
+            else:
+
+                    #No filing in Od Db as well
+                    return HttpResponse(status=404,content='<h3 style="text-align:center">No filings for '+str(company_search[0].name)+ ' was found.Check back later',content_type='text/html')
+        else:
+            #Company could Not be found so redirect to home page
+
+            return HttpResponseRedirect('/')
+
+
+@gzip_page
+def SearchFilingView_old(request):
     template_name = 'companyFiling.html'
 
     extended_template = 'base_company.html'
