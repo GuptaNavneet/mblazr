@@ -7,9 +7,19 @@ s3 = resource('s3', aws_access_key_id=AccesseyID, aws_secret_access_key=Secret)
 
 
 def readFiling(file):
+    #Check Stored File path
+    s3_key=''
+    if str(file).find('filings/files') > -1 and str(file).find('data') == -1:
+        #Normal Path
+        s3_key='filings/files/'+file
+    elif str(file).find('data')>-1:
+        s3_key= 'filings/files/'+file
+    else:
+      s3_key=  'filings/files/'+file
+
     try:
-        response = s3.Object(bucket_name, 'filings/files/'+file).get()['Body'].read()
-    except:
+        response = s3.Object(bucket_name, s3_key).get()['Body'].read()
+    except Exception as e:
         response = ''
 
     return response
@@ -148,7 +158,7 @@ def toc_exctract(file):
     #     link ='<a href="/exhibits/'+str(l.exhib_path).split('/')[-1]+'" class="exhibit-link">'+str(l.exhib_path).split('/')[-1]+'</a>'
     #     all_exhibits=all_exhibits+str(link)
     # print(file_recieved)
-
+    #print(unique_toc_items)
     html_of_toc = ''
     for itm in unique_toc_items:
         html_of_toc = html_of_toc + str(itm)
