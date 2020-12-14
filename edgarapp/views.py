@@ -24,15 +24,11 @@ from django.templatetags.static import static
 from django.utils.translation import ugettext as _
 from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
-import requests, os, os.path,mysql
-from mysql.connector import Error, errorcode
+
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
-from .models import Company, Directors, Executives, Filing, Funds, Proxies,FilingsExhibits
+from .models import Company, Directors, Executives, Filing, Funds, Proxies
 from .utils import TOCAlternativeExtractor, Printer
-from .readfiling import readFiling,toc_exctract
-from django.views.decorators.clickjacking import xframe_options_exempt
-from django.core.exceptions import ObjectDoesNotExist
-#from .config import  password,user,host,database
+
 
 def handler404(request, *args, **argv):
     extended_template = 'base.html'
@@ -42,7 +38,6 @@ def handler404(request, *args, **argv):
     response = render_to_response('404.html', {'extended_template': extended_template},
                                   context_instance=RequestContext(request))
     response.status_code = 404
-
     return response
 
 
@@ -68,6 +63,7 @@ def SearchResultsView(request):
         extended_template = 'base_company_member.html'
 
     query = request.GET.get('q')
+    print(query)
 
     if not request.user.is_authenticated:
         # print("done")
@@ -204,121 +200,6 @@ def SearchResultsView(request):
 @gzip_page
 def SearchFilingView(request):
     template_name = 'companyFiling.html'
-    extended_template = 'base_company.html'
-    global filing_to_display,filings_list
-    q_company = request.GET.get('q')
-    q_filing = request.GET.get('fid')
-    if q_company == '' or q_company == None:
-        q_company='TSLA'
-
-    if q_filing=='' or q_filing == None:
-        q_filing='all'
-    else:
-        try:
-            int(q_filing)
-        except:
-            q_filing='all'
-
-
-
-    #Authentication here
-    if not request.user.is_authenticated and q_company != 'TSLA':
-        # redirect them to login
-        return redirect('/accounts/login/?next=' + q_company)
-
-    elif request.user.is_authenticated or (not request.user.is_authenticated and q_company == 'TSLA'):
-        #Check query being searched
-        company_search = Company.objects.filter(ticker=q_company)
-
-        if len(company_search)>0:
-            #Company is valid
-            filings_for_company = Filing.objects.filter(cik=company_search[0].cik)
-
-            if len(filings_for_company)>0:
-                filings_list=[]
-
-                #Prepare Filings List (to didplay on left side)
-                for myfiling in filings_for_company:
-                    filings_list.append(myfiling.dict_values())
-                #We have filings for that Company
-                if q_filing == 'all':
-                    filing_to_display = filings_for_company[0]
-                else:
-                    result_for_fid = Filing.objects.filter(cik=company_search[0].cik,id=q_filing)
-                    if len(result_for_fid)==1:
-                      filing_to_display =result_for_fid[0]
-                    else:
-                      #Output First Filing automaticaly
-                      filing_to_display = filings_for_company[0]
-
-
-                #Now we have filings as well as complete company info
-                company_cik = company_search[0].cik
-                company_name = company_search[0].name
-                company_ticker =company_search[0].ticker
-
-                #Get directors,executives,funds
-                funds = Funds.objects.filter(company=company_name)[:100]
-                directors = Directors.objects.filter(company=company_name)
-                executives = Executives.objects.filter(company=company_name)
-
-                object_list=[]
-
-                #Fetch file and prepare TOC
-                #Check  the Filing Data
-                all_parts = str(filing_to_display.filingpath).split('/')
-
-                path_to_extract_toc =''
-                path_of_filing =''
-
-                if(len(all_parts)==4): #filings/files/val/file.ht
-                    path_to_extract_toc = str(filing_to_display.filingpath).split('/')[2]+'/'+ str(filing_to_display.filingpath).split('/')[-1]
-                    path_of_filing = path_to_extract_toc
-                elif (len(all_parts)==2): #cikvalue/file.htm
-                    path_to_extract_toc = str(filing_to_display.filingpath)
-                    path_of_filing =path_to_extract_toc
-
-                fetched_filing = readFiling(path_to_extract_toc)
-
-                #print(fetched_filing)
-                # #t_o_c = filing_to_display.table_of_contents.first()
-                # #if not t_o_c :
-                toc_extractor = TOCAlternativeExtractor()
-                extract_data = toc_extractor.extract(fetched_filing)
-                t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
-
-                filing_toc =t_o_c.body
-
-
-                return render(
-                    request, template_name, {
-                        'object_list': object_list,
-                        'company_filings': filings_list,
-                        'company_ticker': company_ticker,
-                        'directors': directors,
-                        'executives': executives,
-                        'company_name': company_name,
-                        'current_filing': filing_to_display,
-                        'funds': funds,
-                        'extended_template': extended_template,
-                        'table_of_contents': filing_toc,  # prep,  # t_o_c.body,#updatedtoc,
-                        'fid': company_cik,
-                        'filepath': path_of_filing
-
-                    })
-            else:
-
-                    #No filing in Od Db as well
-                    return HttpResponse(status=404,content='<h3 style="text-align:center">No filings for '+str(company_search[0].name)+ ' was found.Check back later',content_type='text/html')
-        else:
-            #Company could Not be found so redirect to home page
-
-            return HttpResponseRedirect('/')
-
-
-@gzip_page
-def SearchFilingView2(request):
-    template_name = 'companyFiling.html'
 
     extended_template = 'base_company.html'
     if request.user.is_authenticated:
@@ -342,38 +223,26 @@ def SearchFilingView2(request):
     elif request.user.is_authenticated or (not request.user.is_authenticated and query == 'TSLA'):
         # user is authenticated or they are not authenticated but are searching for Tesla
         # check if query sqtring has valid arguments
-        try:
-            comp_searched = Company.objects.filter(ticker=str(query))
-        except ObjectDoesNotExist:
-            comp_searched = Company.objects.all()
-        except Exception as e:
-            print(e)
-            comp_searched = Company.objects.all()
+        company_filings = Filing.objects.filter(company__ticker=query)
 
         fid = request.GET.get('fid')
-        Filings_list = Filing.objects.all()
         if fid == 'all':
             # query string fetches the latest filing
-
-            filing = Filing.objects.filter(cik=comp_searched[0].cik).first()
+            filing = company_filings.first()
 
             # the latest filing is being recieved
+
         else:
             # normal fid is in place
 
-            filing = Filing.objects.filter(cik=comp_searched[0].cik, id=fid)[0]  # the filing was requested by fid
-            print("Filing was using id")
+            filing = company_filings.filter(id=fid).first()  # the filing was requested by fid
 
-        company_filings = [filing.dict_values() for filing in Filings_list]
-        # print(company_filings)
+        company_filings = [filing.dict_values() for filing in company_filings]
 
     links = []
     verify = []
 
-    company = filing.name
-    company_ticker = comp_searched[0].ticker
-    print("company searched "+str(comp_searched[0].name))
-
+    company = filing.company
     #   name = mycompany.name
     #   name = name.upper()
     #   name = name.replace('INTERNATIONAL', 'INTL')
@@ -382,18 +251,18 @@ def SearchFilingView2(request):
     #   name = name.replace('INC.', 'INC')
     #   name = name.replace(',', '')
 
-    # funds = Funds.objects.raw(
-    #   'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
-    funds = Funds.objects.filter(company=company)[:100]
+    #   funds = Funds.objects.raw(
+    #     'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
+    funds = company.funds.all()[:100]
     # 'SELECT * FROM edgarapp_funds WHERE company = %s ORDER BY share_prn_amount+0 DESC LIMIT 100', [name])
 
     # directors = Directors.objects.filter(company=mycompany.name).order_by('-director')
-    directors = Directors.objects.filter(company=company)
+    directors = company.company_directors.all()
 
     # allDirectors = Directors.objects.all()
 
-    executives = Executives.objects.filter(company=company)
-    # executives = company.executives.all()
+    # executives = Executives.objects.filter(company=mycompany.name)
+    executives = company.executives.all()
 
     # today = datetime.today()
     # currYear = today.year
@@ -451,40 +320,19 @@ def SearchFilingView2(request):
     # object_list.append(zip(exectable, matches))
     # object_list.append(links)
 
-    company_name = company
-    # company_ticker = company
+    company_name = company.name
+    company_ticker = company.ticker
 
-    # url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
-    # print(filing.filingpath.split('files/')[1])
-    #print("Now looking for toc")
-    file_recieved = readFiling(filing.filingpath)  # readFiling(filing.filingpath.split('files/')[1])  for mblazr
-    exctracted_toc = toc_exctract(file_recieved)
-    #print("Done looking for toc")
-    # t_o_c = filing.table_of_contents.first()
-    # print(t_o_c)
-    # t_o_c =None;
-    # if not t_o_c :
-    #
-    #     toc_extractor = TOCAlternativeExtractor()
-    #
-    #     extract_data = toc_extractor.extract(file_recieved)
-    #     t_o_c = filing.table_of_contents.create(body=extract_data.table)
-    #     print('--resulf for toc ---')
-    #     print(t_o_c.body)
-    # updatedtoc =t_o_c.body
+    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
 
-    # elif len(file_recieved) < 1:
-    #     t_o_c = {'a': ''}
-    #     t_o_c['body'] = ''
-    #
-    # try:
-    #     updatedtoc=t_o_c.body
-    # except:
-    #     updatedtoc=''
+    t_o_c = filing.table_of_contents.first()
 
-    # -----------------new toc------#
+    if not t_o_c:
+        toc_extractor = TOCAlternativeExtractor()
 
+        extract_data = toc_extractor.extract(url)
 
+        t_o_c = filing.table_of_contents.create(body=extract_data.table)
 
     return render(
         request, template_name, {
@@ -497,26 +345,10 @@ def SearchFilingView2(request):
             'current_filing': filing,
             'funds': funds,
             'extended_template': extended_template,
-            'table_of_contents': exctracted_toc,#prep,  # t_o_c.body,#updatedtoc,
-            'fid': filing.cik,
-            'filepath': filing.filingpath
-
+            'table_of_contents': t_o_c.body,
+            'fid': filing.id,
         }
     )
-
-@xframe_options_exempt
-def filing_fetch(request, id, file):
-
-    try:
-        data = readFiling(str(id) + '/' + str(file))
-
-        if len(data) < 1:
-            data = '<html></head><head><body><h4 style="text-align:center">Filing not available currently.Please check back later</h4></body></html>'
-
-        return HttpResponse(status=200, content_type="text/html", content=data)
-    except:
-        return HttpResponse(status=500, content_type="text/html ",
-                            content="<h3 style='text-align:center'>Something went wrong while we were getting the filings.Please chack back later</h3>")
 
 
 def AboutView(request):
@@ -698,9 +530,9 @@ def PrinterView(request, fid, start):
     except:
         return HttpResponse(status=404, content="Requested Filing Could not be Found for printing")
 
-    url = readFiling(filing.filingpath)
+    url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing.filingpath
     if start == 'full':
-        return HttpResponseRedirect('/getfiling/' + filing.filingpath)
+        return HttpResponseRedirect('/static/filings/' + filing.filingpath)
     else:
         printer = Printer().generate(url, start)
 

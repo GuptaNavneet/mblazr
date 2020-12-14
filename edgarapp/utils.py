@@ -21,16 +21,15 @@ class TOCAlternativeExtractor(object):
 
     html = ''
 
-    def extract(self, rec_data):
+    def extract(self, url):
 
-        # with open(url) as file:
-        #     html = file.read()
-        #     self.html = html
-        html = str(rec_data)
-        self.html = str(html)
-        self.url = rec_data
+        with open(url) as file:
+            html = file.read()
+            self.html = html
 
-        links = self._get_alternative_links(self.html)
+        self.url = url
+
+        links = self._get_alternative_links(html)
 
         links += self._get_exhibits(self.html)
 
@@ -85,12 +84,11 @@ class TOCAlternativeExtractor(object):
         return heading + exhibits
 
     def _get_alternative_links(self, html):
-        myhtml = str(html)
 
-        default_table = self._get_toc(myhtml)
+        default_table = self._get_toc(html)
 
         if default_table:
-            html = str(myhtml).replace(default_table, '[[REMOVED_TABLE]]')
+            html = html.replace(default_table, '[[REMOVED_TABLE]]')
 
         modified_soup = BeautifulSoup(html, 'lxml')
 
@@ -206,15 +204,13 @@ class TOCAlternativeExtractor(object):
 
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
 
-        try:
-         self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
-        except:
-         self.html =''
+        self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
+
         return new_soup
 
     def _get_toc(self, html):
 
-        text = str(html)
+        text = html
 
         start = text.find("SECURITIES AND EXCHANGE COMMISSION")
 
@@ -263,10 +259,9 @@ class TOCAlternativeExtractor(object):
         return text
 
     def save_html(self, html):
-        return None
 
-        #with open(self.url, 'w') as file:
-            #file.write(html)
+        with open(self.url, 'w') as file:
+            file.write(html)
 
 
 class Printer(object):

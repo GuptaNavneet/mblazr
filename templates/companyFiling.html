@@ -290,8 +290,8 @@
                               <p>{{person.bio}}</p>
                             </td>
                             <td id = "director" class="directorCol" >
-                              {% for comp in person.other_companies.all %}
-                                <center>{{ comp.name }}</center>
+                              {% for comp in comps %}
+                                <center>{{ comp }}</center>
                               {% endfor %}
                             </td>
                           </tr>
@@ -438,22 +438,12 @@ document.addEventListener('DOMContentLoaded',function(){
               {% for filing in company_filings %}
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.type %}
-                    <a style="text-decoration:none" href="'{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">
                     <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }} </span> <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span></td>
-                    </a>
-                        {% elif "10-K" in filing.type %}
-                    <a style="text-decoration:none" href="'{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">
-                    <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><a class="filingList"><center>10-K</center></a></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} </span> <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span> </td>
-                    </a>
-                        {% else %}
-                    <a style="text-decoration:none" href="'{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  > <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }} </span> <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span></td>
+                  {% elif "10-K" in filing.type %}
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
                     <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} </span> <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span> </td>
-                    </a>
-
-                    {% endif %}
+                  {% endif %}
                 </tr>
               {% endfor %}
             </tbody>
@@ -488,9 +478,8 @@ document.addEventListener('DOMContentLoaded',function(){
       <!------------ MAIN BODY ---------------->
 
       <div  class="col-md-6 section document-view-section" id="second">
-         <iframe  src="/getfiling/{{ filepath }}">
+         <iframe  src="{% static 'filings/' %}{{ current_filing.filingpath }}">
          </iframe>
-
       </div>
 
 
@@ -573,8 +562,8 @@ if(window.innerWidth>'700'){
        try {
             iframeDocument.querySelector(hash).scrollIntoView({behavior:'smooth'})
         } catch (error) {
-            //hash = hash.slice(1)
-            //iframeDocument.querySelector("[name='"+ hash +"']").scrollIntoView({behavior:'smooth'})
+            hash = hash.slice(1)
+            iframeDocument.querySelector("[name='"+ hash +"']").scrollIntoView({behavior:'smooth'})
         }
 
 
