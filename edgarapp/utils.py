@@ -71,7 +71,10 @@ class TOCAlternativeExtractor(object):
             if href and href not in distinct_exhibits:
                 href_text = href.split('/')[-1]
 
-                exhibits += f"<a href='{href}' class='exhibit-link' target='_blank'>EX-{exhibit_counter} {href_text}</a>"
+                # exhibits += f"<a href='{href}' class='exhibit-link' target='_blank'>EX-{exhibit_counter} {href_text}</a>"
+                # This line changed to show the discription.
+                exhibits += f"<a href='{href}' class='exhibit-link' target='_blank'>EX-{exhibit_counter} {link_text}</a>"
+                
                 distinct_exhibits.append(href)
 
                 exhibit_counter += 1
