@@ -25,7 +25,11 @@ class TOCAlternativeExtractor(object):
 
         with open(url) as file:
             html = file.read()
-            self.html = html
+        html = html.replace('\\n','') 
+        html = html.replace('\\t','')
+        html = html.replace('\t','')
+        html = html.replace('\n','')
+        self.html = html
 
         self.url = url
 
@@ -90,6 +94,7 @@ class TOCAlternativeExtractor(object):
 
         default_table = self._get_toc(html)
 
+        html = self.html
         if default_table:
             html = html.replace(default_table, '[[REMOVED_TABLE]]')
 
@@ -217,6 +222,7 @@ class TOCAlternativeExtractor(object):
 
         start = text.find("SECURITIES AND EXCHANGE COMMISSION")
 
+        html = self.give_id_to_tags(html, start)
         if start != -1:
             text = text[start:]
 
@@ -260,6 +266,42 @@ class TOCAlternativeExtractor(object):
             return ''
 
         return text
+
+    def give_id_to_tags(self, html, start):
+    # find find balance, income, and cash pages by tags. 
+    # Give ids to that tags so later can to them by buttons
+        if start > 0 and html:
+            so = BeautifulSoup(html[start:], 'html.parser')
+
+            # tag for first button-Balance Sheet
+            if so.find_all(id='Consolidated_Balance_Sheets'):
+                pass
+            else:
+                balance_sheets_tags = so.find_all(['p','b','font','span'], string=re.compile(r'^(?=.*\bCONSOLIDATED\b)(?=.*\bBALANCE\b)(?=.*\bSHEET\b).*$', re.IGNORECASE))
+                if len(balance_sheets_tags) > 0: 
+                    balance_sheets_tag = balance_sheets_tags[0]
+                    balance_sheets_tag['id'] = "Consolidated_Balance_Sheets"
+            
+            # tag for second button-Income Statement
+            if so.find_all(id='Consolidated_Statmnts_of_Cmprehnsve_Loss'):
+                pass
+            else:
+                loss_tags = so.find_all(['p','b','font','span'], string=re.compile(r'^(?=.*\bCONSOLIDATED\b)(?=.*\bSTATEMENT\b).*$', re.IGNORECASE))
+                if len(loss_tags) > 0:
+                    income_statement_tag = [e for e in loss_tags if 'loss' in e.string.lower() or 'income' in e.string.lower()][0]
+                    income_statement_tag['id'] = 'Consolidated_Statmnts_of_Cmprehnsve_Loss'
+
+            # tag for third button - Cash Flow 
+            if so.find_all(id='Consolidated_Statements_of_Cash_Flows'):
+                pass
+            else:
+                if loss_tags:
+                    income_statement_tag = [e for e in loss_tags if 'cash' in e.string.lower() or 'flows' in e.string.lower()][0]
+                    income_statement_tag['id'] = 'Consolidated_Statements_of_Cash_Flows'
+        
+            self.html = str(so)
+            html = str(so) 
+        return html
 
     def save_html(self, html):
 

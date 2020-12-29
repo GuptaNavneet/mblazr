@@ -26,13 +26,12 @@
          <div class="col-md-6  center-btn">
              <span id="title">{{ company_name }} Earnings {{ current_filing.filingdate }}</span>
         <span id="shortcts">
-
-            <a href="#item1" title="Balance sheet"><small>Balance sheet</small></a>
-            <a href="#item2" title="Income Statement"><small>Income statement</small></a>
-            <a href="#item3" title="Cash Flows"><small>Cash Flows</small></a>
-          </span>
-
-       </div>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Consolidated_Balance_Sheets" id="button1" target="frame" title="Balance sheet" ><small>Balance sheet</small></a>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Consolidated_Statmnts_of_Cmprehnsve_Loss" id="button2" target="frame" title="Income Statement"><small>Income statement</small></a>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Consolidated_Statements_of_Cash_Flows" id="button3" target="frame" title="Cash Flows" ><small>Cash Flows</small></a>
+        </span>
+       
+      </div>
        {% if current_filing.filingtype == '10-Q' %}
        <div class="col-md-3  button2">{{ company_ticker }} {{ current_filing.filingtype }} Quarterly Report</div>
        {%elif current_filing.filingtype == '10-K'%}
@@ -52,15 +51,11 @@
           <div id="shortcuts-mobile" >
             <div id="company_name">{{ company_name }}</div>
             <div id="short-mobile-links" >
-                 <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
+            <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
             <a href="#item1" title="Income Statement"><small>Income statement</small></a>
             <a href="" title="Cash Flows"><small>Cash Flows</small></a>
             </div>
-
-
         </div>
-
-
       </div>
 
     <div class="row p-0 m-0" id="page-content-wrap" >
@@ -438,11 +433,25 @@ document.addEventListener('DOMContentLoaded',function(){
               {% for filing in company_filings %}
                 <tr id="tr_doc" style="padding:3px 0px">
                   {% if "10-Q" in filing.type %}
-                    <td class="p-0" id = "qbg"  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-Q</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  > <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }} </span> <span class="print-filing" ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span></td>
+                    <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
+                    
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed on  {{ filing.date }} </span> 
+                      <span class="print-filing" >
+                        <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
+                      </span>
+                    </td>
+
                   {% elif "10-K" in filing.type %}
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  ><span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} </span> <span class="print-filing"  ><a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a></span> </td>
+                    
+                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">Filed  on {{ filing.date }} </span> 
+                      <span class="print-filing"  >
+                        <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
+                      </span> 
+                    </td>
+
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -476,10 +485,10 @@ document.addEventListener('DOMContentLoaded',function(){
       <!--------------------------------------->
       <!----------- 2nd column ---------------->
       <!------------ MAIN BODY ---------------->
-
+      
       <div  class="col-md-6 section document-view-section" id="second">
-         <iframe  src="{% static 'filings/' %}{{ current_filing.filingpath }}">
-         </iframe>
+        <iframe name="frame" src="{% static 'filings/' %}{{ current_filing.filingpath }}">
+        </iframe>
       </div>
 
 
@@ -530,7 +539,6 @@ document.addEventListener('DOMContentLoaded',function(){
             itm.addEventListener('mouseout',function(){
                 this.querySelector('span.print').style.display = 'none'
             })
-
         })
 
         $('.' + type + '-link span.print').on('click', function(e) {
@@ -565,20 +573,11 @@ if(window.innerWidth>'700'){
             hash = hash.slice(1)
             iframeDocument.querySelector("[name='"+ hash +"']").scrollIntoView({behavior:'smooth'})
         }
-
-
     })
 
       //I_frame.style.padding = "2% 4%"
       //I_frame.style.border ="none"
-
-
-
-
       })
-
-
-
         let partsInTOC = document.querySelectorAll('.part-link')
         let itemsInToc = document.querySelectorAll('.item-link')
         let notesInTOC = document.querySelectorAll('.note-link')
@@ -625,11 +624,6 @@ if(window.innerWidth>'700'){
         })  
       
         $( ".section document-view-section div" ).eq(1).after('<div id="doc-head"></div>')
-
-
-
-
-
      })
 
         //track which filing has been clicked on
