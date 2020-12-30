@@ -23,7 +23,7 @@ class TOCAlternativeExtractor(object):
     html = ''
 
     def extract(self, url):
-        #For test mode
+        # For test mode
         # url = url.replace('/mnt/filings-static/capitalrap/edgarapp', 'https://mblazr.com')
         # html = str(urlopen(url).read())
         
@@ -256,6 +256,8 @@ class TOCAlternativeExtractor(object):
         # if pos == -1:
         #     pos = text.lower().find('<hr style="page-break-after:always"')
 
+        html = self.give_id_to_tags(html, start)
+
         if pos == -1:
             return ''
 
@@ -263,7 +265,6 @@ class TOCAlternativeExtractor(object):
 
         end_pos = text.lower().find('</table>')
 
-        html = self.give_id_to_tags(html, start, end_pos)
 
         if pos != -1 and end_pos != -1:
             text = text[:end_pos + 8]
@@ -273,7 +274,7 @@ class TOCAlternativeExtractor(object):
 
         return text
 
-    def give_id_to_tags(self, html, start, end_pos):
+    def give_id_to_tags(self, html, start):
     # Find find balance, income, and cash pages by tags. 
     # Give ids to that tags so later can to them by buttons
         if start > 0 and html:
