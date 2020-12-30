@@ -16,7 +16,8 @@ Table of Contents Extractor
 This class takes a filing html file as input and return the table of contents
 '''
 
-
+# used in finding pages for 3 buttons to keep page titles search results
+tree_buttons = {}
 class TOCAlternativeExtractor(object):
     exhibit_end = -1
 
@@ -34,6 +35,12 @@ class TOCAlternativeExtractor(object):
         html = html.replace('\\t','')
         html = html.replace('\t','')
         html = html.replace('\n','')
+
+        # remove  previous tag ids for 3 page titles
+        html = html.replace('id="Cons_Balance_Sheets"','')
+        html = html.replace('id="Cons_Statmnts_of_Cmprehnsve_Loss"','')
+        html = html.replace('id="Cons_Statements_of_Cash_Flows"','')
+
         self.html = html
 
         self.url = url
@@ -98,10 +105,14 @@ class TOCAlternativeExtractor(object):
     def _get_alternative_links(self, html):
 
         default_table = self._get_toc(html)
+        # before manipulating html remove all past ids of page titles for 3 buttons
+        default_table.replace('Cons_Statements_of_Cash_Flows', '')
+        default_table.replace('Cons_Statmnts_of_Cmprehnsve_Loss', '')
+        default_table.replace('Cons_Balance_Sheets', '')
 
         html = self.html
-        if default_table:
-            html = html.replace(default_table, '[[REMOVED_TABLE]]')
+        # if default_table:
+        #     html = html.replace(default_table, '[[REMOVED_TABLE]]')
 
         modified_soup = BeautifulSoup(html, 'lxml')
 
@@ -116,6 +127,34 @@ class TOCAlternativeExtractor(object):
 
             if tag.name == 'a':
                 return False
+
+             # check if the tag have id and it's one of list below
+            if 'id' in tag.attrs and tag.attrs['id'] in ['Cons_Statements_of_Cash_Flows', 'Cons_Statmnts_of_Cmprehnsve_Loss', 'Cons_Balance_Sheets']:
+                tag.attrs['id'] = ''
+
+
+            # check if tag have text inside, check if tag is one of tag list below 
+            # and check if text lenght is betwen 100 and 25
+            # check if tag have only one content inside (which should be the text)
+            if len(tree_buttons) < 3 and tag.name in ['p','b','font','span'] and 90 > len(tag.text) > 25:
+                
+                # tag shouldn't have parent a or td. Only content table tags have td and a as parents 
+                if tag.parent.name not in ['a', 'td']:
+                    # check tag text to consist words from list below
+                    if not 'balance' in tree_buttons and len([word for word in ['consolidated', 'balance', 'sheet'] if word in tag.text.lower()]) == 3:
+                        tag['id'] = 'Cons_Balance_Sheets'
+                        tree_buttons['balance'] = True
+
+                    if len([word for word in ['consolidated', 'statement'] if word in tag.text.lower()]) == 2:
+                        
+                        if not 'loss' in tree_buttons and 'loss' in tag.text.lower() or 'income' in tag.text.lower():
+                            tag['id'] = 'Cons_Statmnts_of_Cmprehnsve_Loss'
+                            tree_buttons['loss'] = True
+
+                        if not 'cash' in tree_buttons and 'cash' in tag.text.lower() or 'flow' in tag.text.lower():
+                            tag['id'] = 'Cons_Statements_of_Cash_Flows'
+                            tree_buttons['cash'] = True
+
 
             if not tag.has_attr('style') and tag.name != 'b':
                 return False
@@ -142,6 +181,8 @@ class TOCAlternativeExtractor(object):
 
         id_counter = 0
 
+        global tree_buttons
+        tree_buttons = {}
         headings = modified_soup.find_all(is_bold)
 
         num_of_headings = len(list(headings))
@@ -256,7 +297,6 @@ class TOCAlternativeExtractor(object):
         # if pos == -1:
         #     pos = text.lower().find('<hr style="page-break-after:always"')
 
-        html = self.give_id_to_tags(html, start)
 
         if pos == -1:
             return ''
@@ -274,43 +314,6 @@ class TOCAlternativeExtractor(object):
 
         return text
 
-    def give_id_to_tags(self, html, start):
-    # Find find balance, income, and cash pages by tags. 
-    # Give ids to that tags so later can to them by buttons
-        if start > 0 and html:
-            so = BeautifulSoup(html[start:], 'html.parser')
-
-            # tag for first button-Balance Sheet 
-            # if so.find_all(id='Consolidated_Balance_Sheets'):
-            #     pass
-            # else:
-            balance_sheets_tags = so.find_all(['p','b','font','span'], string=re.compile(r'CONSOLIDATED BALANCE SHEET', re.IGNORECASE))
-            if len(balance_sheets_tags) > 0: 
-                balance_sheets_tag = [e for e in balance_sheets_tags if e.contents[0].name != 'a' and e.parent.name != 'a'][0]
-                balance_sheets_tag['id'] = "Cons_Balance_Sheets"
-            
-            # tag for second button-Income Statement
-            # if so.find_all(id='Consolidated_Statmnts_of_Cmprehnsve_Loss'):
-                # pass
-            # else:
-            loss_tags = so.find_all(['p','b','font','span'], string=re.compile(r'CONSOLIDATED STATEMENT', re.IGNORECASE))
-            if len(loss_tags) > 0:
-                income_statement_tags = [e for e in loss_tags if 'loss' in e.string.lower() or 'income' in e.string.lower()]
-                income_statement_tag = [e for e in income_statement_tags if e.parent.name != 'a' and e.contents[0].name != 'a'][0]
-                income_statement_tag['id'] = 'Cons_Statmnts_of_Cmprehnsve_Loss'
-
-            # tag for third button - Cash Flow 
-            # if so.find_all(id='Consolidated_Statements_of_Cash_Flows'):
-                # pass
-            # else:
-            if loss_tags:
-                income_statement_tags = [e for e in loss_tags if 'cash' in e.string.lower() or 'flows' in e.string.lower()]
-                income_statement_tag = [e for e in income_statement_tags if e.parent.name != 'a' and e.contents[0].name != 'a'][0]
-                income_statement_tag['id'] = 'Cons_Statements_of_Cash_Flows'
-        
-            self.html = str(so)
-            html = str(so) 
-        return html
 
     def save_html(self, html):
         # For test mode
