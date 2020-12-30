@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from argparse import Namespace
+# from urllib.request import urlopen
 
 import unicodedata
 
@@ -22,9 +23,13 @@ class TOCAlternativeExtractor(object):
     html = ''
 
     def extract(self, url):
-
+        #For test mode
+        # url = url.replace('/mnt/filings-static/capitalrap/edgarapp', 'https://mblazr.com')
+        # html = str(urlopen(url).read())
+        
         with open(url) as file:
             html = file.read()
+
         html = html.replace('\\n','') 
         html = html.replace('\\t','')
         html = html.replace('\t','')
@@ -222,7 +227,6 @@ class TOCAlternativeExtractor(object):
 
         start = text.find("SECURITIES AND EXCHANGE COMMISSION")
 
-        html = self.give_id_to_tags(html, start)
         if start != -1:
             text = text[start:]
 
@@ -259,6 +263,8 @@ class TOCAlternativeExtractor(object):
 
         end_pos = text.lower().find('</table>')
 
+        html = self.give_id_to_tags(html, start, end_pos)
+
         if pos != -1 and end_pos != -1:
             text = text[:end_pos + 8]
 
@@ -267,44 +273,54 @@ class TOCAlternativeExtractor(object):
 
         return text
 
-    def give_id_to_tags(self, html, start):
-    # find find balance, income, and cash pages by tags. 
+    def give_id_to_tags(self, html, start, end_pos):
+    # Find find balance, income, and cash pages by tags. 
     # Give ids to that tags so later can to them by buttons
         if start > 0 and html:
             so = BeautifulSoup(html[start:], 'html.parser')
 
-            # tag for first button-Balance Sheet
-            if so.find_all(id='Consolidated_Balance_Sheets'):
-                pass
-            else:
-                balance_sheets_tags = so.find_all(['p','b','font','span'], string=re.compile(r'^(?=.*\bCONSOLIDATED\b)(?=.*\bBALANCE\b)(?=.*\bSHEET\b).*$', re.IGNORECASE))
-                if len(balance_sheets_tags) > 0: 
-                    balance_sheets_tag = balance_sheets_tags[0]
-                    balance_sheets_tag['id'] = "Consolidated_Balance_Sheets"
+            # tag for first button-Balance Sheet 
+            # if so.find_all(id='Consolidated_Balance_Sheets'):
+            #     pass
+            # else:
+            balance_sheets_tags = so.find_all(['p','b','font','span'], string=re.compile(r'CONSOLIDATED BALANCE SHEET', re.IGNORECASE))
+            if len(balance_sheets_tags) > 0: 
+                balance_sheets_tag = [e for e in balance_sheets_tags if e.contents[0].name != 'a' and e.parent.name != 'a'][0]
+                balance_sheets_tag['id'] = "Cons_Balance_Sheets"
             
             # tag for second button-Income Statement
-            if so.find_all(id='Consolidated_Statmnts_of_Cmprehnsve_Loss'):
-                pass
-            else:
-                loss_tags = so.find_all(['p','b','font','span'], string=re.compile(r'^(?=.*\bCONSOLIDATED\b)(?=.*\bSTATEMENT\b).*$', re.IGNORECASE))
-                if len(loss_tags) > 0:
-                    income_statement_tag = [e for e in loss_tags if 'loss' in e.string.lower() or 'income' in e.string.lower()][0]
-                    income_statement_tag['id'] = 'Consolidated_Statmnts_of_Cmprehnsve_Loss'
+            # if so.find_all(id='Consolidated_Statmnts_of_Cmprehnsve_Loss'):
+                # pass
+            # else:
+            loss_tags = so.find_all(['p','b','font','span'], string=re.compile(r'CONSOLIDATED STATEMENT', re.IGNORECASE))
+            if len(loss_tags) > 0:
+                income_statement_tags = [e for e in loss_tags if 'loss' in e.string.lower() or 'income' in e.string.lower()]
+                income_statement_tag = [e for e in income_statement_tags if e.parent.name != 'a' and e.contents[0].name != 'a'][0]
+                income_statement_tag['id'] = 'Cons_Statmnts_of_Cmprehnsve_Loss'
 
             # tag for third button - Cash Flow 
-            if so.find_all(id='Consolidated_Statements_of_Cash_Flows'):
-                pass
-            else:
-                if loss_tags:
-                    income_statement_tag = [e for e in loss_tags if 'cash' in e.string.lower() or 'flows' in e.string.lower()][0]
-                    income_statement_tag['id'] = 'Consolidated_Statements_of_Cash_Flows'
+            # if so.find_all(id='Consolidated_Statements_of_Cash_Flows'):
+                # pass
+            # else:
+            if loss_tags:
+                income_statement_tags = [e for e in loss_tags if 'cash' in e.string.lower() or 'flows' in e.string.lower()]
+                income_statement_tag = [e for e in income_statement_tags if e.parent.name != 'a' and e.contents[0].name != 'a'][0]
+                income_statement_tag['id'] = 'Cons_Statements_of_Cash_Flows'
         
             self.html = str(so)
             html = str(so) 
         return html
 
     def save_html(self, html):
+        # For test mode
+        # import os 
+        # from capitalrap.settings import STATICFILES_DIRS
+        # new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
 
+        # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
+        #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
+        # with open(new_url, 'w') as file:
+            
         with open(self.url, 'w') as file:
             file.write(html)
 
