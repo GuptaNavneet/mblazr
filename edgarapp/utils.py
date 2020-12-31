@@ -139,7 +139,7 @@ class TOCAlternativeExtractor(object):
             if len(tree_buttons) < 3 and tag.name in ['p','b','font','span'] and 90 > len(tag.text) > 25:
                 
                 # tag shouldn't have parent a or td. Only content table tags have td and a as parents 
-                if tag.parent.name not in ['a', 'td']:
+                if not [e for e in tag.parents if e.name in ['td','tr','a']]:
                     # check tag text to consist words from list below
                     if not 'balance' in tree_buttons and len([word for word in ['consolidated', 'balance', 'sheet'] if word in tag.text.lower()]) == 3:
                         tag['id'] = 'Cons_Balance_Sheets'
@@ -324,7 +324,7 @@ class TOCAlternativeExtractor(object):
         # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
         #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
         # with open(new_url, 'w') as file:
-            
+        
         with open(self.url, 'w') as file:
             file.write(html)
 
