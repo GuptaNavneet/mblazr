@@ -291,7 +291,28 @@ def SearchFilingView(request):
                 extract_data = toc_extractor.extract(url)
 
                 t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+                
+                from capitalrap.settings import BASE_DIR
+                import csv
 
+                customers = []
+                suppliers = []
+                with open(BASE_DIR+'/customer-suppliers.csv','r') as f:
+                    data = csv.DictReader(f, delimiter=',', quotechar='\n')
+                    
+                    for row in data:
+                        if not {'ticker':row['ticker1'],'company':row['Company']} in customers:
+                            customers.append({
+                                'ticker': row['ticker1'],
+                                'company':row['Company'],
+                            })
+
+                        if not {'ticker':row['ticker2'],'company':row['Supplier']} in suppliers:    
+                            suppliers.append({
+                                'ticker': row['ticker2'],
+                                'company':row['Supplier']
+                            })
+                
                 return render(
                     request, template_name, {
                         'object_list': object_list,
@@ -305,6 +326,8 @@ def SearchFilingView(request):
                         'extended_template': extended_template,
                         'table_of_contents': t_o_c.body,  # prep,  # t_o_c.body,#updatedtoc,
                         'fid': company_cik,
+                        'customers': customers,
+                        'suppliers': suppliers,
                         #'filepath': path_of_filing
 
                     })
