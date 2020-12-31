@@ -145,6 +145,11 @@ class TOCAlternativeExtractor(object):
                         tag['id'] = 'Cons_Balance_Sheets'
                         tree_buttons['balance'] = True
 
+                    # If there is not 'consolidated balance sheet' check for 'consolidated financial position'
+                    if not 'balance' in tree_buttons and not 'financial' in tree_buttons and len([word for word in ['consolidated', 'financial', 'position'] if word in tag.text.lower()]) == 3:
+                        tag['id'] = 'Cons_Balance_Sheets'
+                        tree_buttons['financial'] = True
+
                     if len([word for word in ['consolidated', 'statement'] if word in tag.text.lower()]) == 2:
                         
                         if not 'loss' in tree_buttons and 'loss' in tag.text.lower() or 'income' in tag.text.lower():
@@ -324,7 +329,7 @@ class TOCAlternativeExtractor(object):
         # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
         #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
         # with open(new_url, 'w') as file:
-        
+
         with open(self.url, 'w') as file:
             file.write(html)
 
