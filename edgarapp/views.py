@@ -288,6 +288,8 @@ def SearchFilingView(request):
                 #if not t_o_c:
                 toc_extractor = TOCAlternativeExtractor()
 
+                # populate_new_filings()
+
                 extract_data = toc_extractor.extract(url)
 
                 t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
@@ -297,22 +299,24 @@ def SearchFilingView(request):
 
                 customers = []
                 suppliers = []
+
                 with open(BASE_DIR+'/customer-suppliers.csv','r') as f:
-                    data = csv.DictReader(f, delimiter=',', quotechar='\n')
+                    for row in f.read().replace(', Inc', ' Inc').replace('"','').split('\n'):
+                        row = row.split(',')
+                        print('row: ', row)
                     
-                    for row in data:
-                        if not {'ticker':row['ticker1'],'company':row['Company']} in customers:
+                        if {'ticker':row[1],'company':row[3]} not in customers and row[3]:
                             customers.append({
-                                'ticker': row['ticker1'],
-                                'company':row['Company'],
+                                'ticker': row[1],
+                                'company':row[3],
                             })
 
-                        if not {'ticker':row['ticker2'],'company':row['Supplier']} in suppliers:    
+                        if {'ticker':row[2],'company':row[4]} not in suppliers and row[4]:    
                             suppliers.append({
-                                'ticker': row['ticker2'],
-                                'company':row['Supplier']
+                                'ticker': row[2],
+                                'company':row[4]
                             })
-                
+
                 return render(
                     request, template_name, {
                         'object_list': object_list,
