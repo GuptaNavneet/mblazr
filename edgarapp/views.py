@@ -301,20 +301,17 @@ def SearchFilingView(request):
                 suppliers = []
 
                 with open(BASE_DIR+'/customer-suppliers.csv','r') as f:
-                    for row in f.read().replace(', Inc', ' Inc').replace('"','').split('\n'):
-                        row = row.split(',')
-                        print('row: ', row)
-                    
-                        if {'ticker':row[1],'company':row[3]} not in customers and row[3]:
-                            customers.append({
-                                'ticker': row[1],
-                                'company':row[3],
+                    for row in csv.DictReader(f):
+                        if row['ticker1'] == company_ticker and row['Supplier'] != '':
+                            suppliers.append({
+                                'ticker': row['ticker2'],
+                                'company':row['Supplier']
                             })
 
-                        if {'ticker':row[2],'company':row[4]} not in suppliers and row[4]:    
-                            suppliers.append({
-                                'ticker': row[2],
-                                'company':row[4]
+                        if row['ticker2'] == company_ticker and row['Company'] != '':
+                            customers.append({
+                                'ticker': row['ticker1'],
+                                'company':row['Company'],
                             })
 
                 return render(
