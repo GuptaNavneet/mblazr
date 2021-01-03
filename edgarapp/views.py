@@ -26,7 +26,7 @@ from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
-from .models import Company, Directors, Executives, Filing, Funds, Proxies
+from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_Rel
 from .utils import TOCAlternativeExtractor, Printer
 
 
@@ -297,22 +297,8 @@ def SearchFilingView(request):
                 from capitalrap.settings import BASE_DIR
                 import csv
 
-                customers = []
-                suppliers = []
-
-                with open(BASE_DIR+'/customer-suppliers.csv','r') as f:
-                    for row in csv.DictReader(f):
-                        if row['ticker1'] == company_ticker and row['Supplier'] != '':
-                            suppliers.append({
-                                'ticker': row['ticker2'],
-                                'company':row['Supplier']
-                            })
-
-                        if row['ticker2'] == company_ticker and row['Company'] != '':
-                            customers.append({
-                                'ticker': row['ticker1'],
-                                'company':row['Company'],
-                            })
+                suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
+                customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
 
                 return render(
                     request, template_name, {
