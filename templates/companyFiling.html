@@ -399,14 +399,14 @@ document.addEventListener('DOMContentLoaded',function(){
                     <thead>
                       <tr class="found_tr">
                         <th class="found_td">Customer name</th>
-                        <th class="found_td">Tiker</th>
+                        <th class="found_td" style="width: 30%;">Tiker</th>
                       </tr>
                     </thead>
                     <tbody class="found_table_scrollable">
                       {% for customer in customers %}
                       <tr class="found_tr">
                         <th class="found_td">{{ customer.company }}</th>
-                        <th class="found_td">{{ customer.ticker }}</th>
+                        <th class="found_td" style="width: 30%;">{{ customer.ticker }}</th>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -419,14 +419,14 @@ document.addEventListener('DOMContentLoaded',function(){
                       <thead>
                         <tr class="found_tr">
                           <th class="found_td">Supplier name</th>
-                          <th class="found_td">Tiker</th>
+                          <th class="found_td" style="width: 30%;">Tiker</th>
                         </tr>
                       </thead>
                       <tbody class="found_table_scrollable">
                         {% for supplier in suppliers %}
                         <tr class="found_tr">
                           <th class="found_td">{{ supplier.company }}</th>
-                          <th class="found_td">{{ supplier.ticker }}</th>
+                          <th class="found_td" style="width: 30%;">{{ supplier.ticker }}</th>
                         </tr>
                         {% endfor %}
                       </tbody>
