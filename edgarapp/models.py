@@ -22,7 +22,16 @@ class Company(models.Model):
 	def __str__(self):
 		return self.name
 
+class CS_Rel(models.Model):
+	id = models.IntegerField(primary_key=True)
+	ticker1 = models.CharField(max_length=50, blank=True, null=True)
+	ticker2 = models.CharField(max_length=50, blank=True, null=True)
+	company = models.CharField(max_length=50, blank=True, null=True)
+	supplier = models.CharField(max_length=50, blank=True, null=True)
 
+	def __str__(self):
+		return self.ticker1 + ' : ' + self.ticker2
+	
 class Filing(models.Model):
 	cik = models.CharField(max_length=255)
 	name = models.CharField(max_length=255)
