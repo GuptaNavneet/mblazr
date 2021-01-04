@@ -1,7 +1,1 @@
 edgarapp/static/filings/
-# static/
-filings
-__pycache__
-.DS_Store
-customer-suppliers.csv
-requirements.txt
