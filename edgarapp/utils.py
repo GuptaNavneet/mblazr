@@ -322,15 +322,15 @@ class TOCAlternativeExtractor(object):
 
     def save_html(self, html):
         # For test mode
-        import os 
-        from capitalrap.settings import STATICFILES_DIRS
-        new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
+        # import os 
+        # from capitalrap.settings import STATICFILES_DIRS
+        # new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
+# 
+        # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
+            # os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
+        # with open(new_url, 'w') as file:
 
-        if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
-            os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
-        with open(new_url, 'w') as file:
-
-        # with open(self.url, 'w') as file:
+        with open(self.url, 'w') as file:
             file.write(html)
 
 
