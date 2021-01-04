@@ -1,2 +1,7 @@
 edgarapp/static/filings/
-static/
+# static/
+filings
+__pycache__
+.DS_Store
+customer-suppliers.csv
+requirements.txt
