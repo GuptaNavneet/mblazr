@@ -1,0 +1,41 @@
+.container{
+	overflow: hidden;
+  }
+  #customer_supplier_box{
+	border: 3px solid #fff;
+	padding: 15px;
+	background-color: white;
+	display: flex;
+	height: 100%;
+  }
+  .found_table_containers{
+	height: 100%;
+	width: 50%;
+	float: left;
+	padding: 20px;
+	justify-content: center;
+  }
+  .found_table_scrollable{
+	display:block;
+	height:80%;
+	overflow:auto;
+  }
+  thead, tbody tr {
+	  display:table;
+	  width:100%;
+	  table-layout:fixed;/* even columns width , fix width of table too*/
+  }
+
+#myBtn4{
+	width: 50% !important;
+	margin: 0 auto;
+	margin-top: 0px;
+}
+
+#myBtn4_row {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin-left: 0px;
+	margin-top: 3px; 
+}

@@ -26,7 +26,7 @@ from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
-from .models import Company, Directors, Executives, Filing, Funds, Proxies
+from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_Rel
 from .utils import TOCAlternativeExtractor, Printer
 
 
@@ -288,9 +288,17 @@ def SearchFilingView(request):
                 #if not t_o_c:
                 toc_extractor = TOCAlternativeExtractor()
 
+                # populate_new_filings()
+
                 extract_data = toc_extractor.extract(url)
 
                 t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+                
+                from capitalrap.settings import BASE_DIR
+                import csv
+
+                suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
+                customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
 
                 return render(
                     request, template_name, {
@@ -305,6 +313,8 @@ def SearchFilingView(request):
                         'extended_template': extended_template,
                         'table_of_contents': t_o_c.body,  # prep,  # t_o_c.body,#updatedtoc,
                         'fid': company_cik,
+                        'customers': customers,
+                        'suppliers': suppliers,
                         #'filepath': path_of_filing
 
                     })

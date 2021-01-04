@@ -9,10 +9,10 @@
   <title>{{ company_name }} Filing</title>
 
   <script type="text/javascript" src="{% static 'js/autocomplete.js' %}"></script>
-
 <!--  <link href="{% static 'css/autocomplete.css' %}" rel="stylesheet">-->
 <!-- stylesheets for large screens-->
   <link href="{% static 'css/filing-detail-styles.css' %}" media="screen and (min-width:700px)" rel="stylesheet" />
+  <link href="{% static 'css/found_card.css' %}" rel="stylesheet" />
 <!-- stylesheet for small screens  -->
 <link href="{% static 'css/mobile-filing-detail-styles.css' %}" media="screen and (max-width:700px)" rel="stylesheet" />
 {% endblock %}
@@ -388,6 +388,97 @@ document.addEventListener('DOMContentLoaded',function(){
 })
             </script>
 
+            <div id="myModal4" class="modal">
+              <div class="modal-content container">
+                <span class="close">&times;</span>
+                <div id="customer_supplier_box">
+                  
+                  <div id="Customer_table" class="found_table_containers">
+                  <h3>Customer</h3>
+                  <table class = "fl-table table table-responsive table-hover">
+                    <thead>
+                      <tr class="found_tr">
+                        <th class="found_td">Customer name</th>
+                        <th class="found_td" style="width: 30%;">Tiker</th>
+                      </tr>
+                    </thead>
+                    <tbody class="found_table_scrollable">
+                      {% for customer in customers %}
+                      <tr class="found_tr">
+                        <th class="found_td">{{ customer.company }}</th>
+                        <th class="found_td" style="width: 30%;">{{ customer.ticker }}</th>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  </div>
+
+                  <div id="Supplier_table" class = "found_table_containers">
+                    <h3>Supplier</h3>
+                    <table class = "fl-table table table-responsive table-hover">
+                      <thead>
+                        <tr class="found_tr">
+                          <th class="found_td">Supplier name</th>
+                          <th class="found_td" style="width: 30%;">Tiker</th>
+                        </tr>
+                      </thead>
+                      <tbody class="found_table_scrollable">
+                        {% for supplier in suppliers %}
+                        <tr class="found_tr">
+                          <th class="found_td">{{ supplier.company }}</th>
+                          <th class="found_td" style="width: 30%;">{{ supplier.ticker }}</th>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <style>
+              
+            </style>
+
+            <script type="text/javascript">
+              document.addEventListener('DOMContentLoaded',function(){
+                            // Get the modal
+                            var modal4 = document.getElementById("myModal4");
+              
+                            // Get the button that opens the modal
+                            var btn4 = document.getElementById("myBtn4");
+              
+                            // Get the <span> element that closes the modal
+                            var span4 = document.getElementsByClassName("close")[3];
+              
+                            // When the user clicks on the button, open the modal
+                            btn4.onclick = function() {
+                              modal4.style.display = "block";
+                            }
+              
+                            // When the user clicks on <span> (x), close the modal
+                            span4.onclick = function() {
+                              console.log('close')
+                              modal4.style.display = "none";
+                            }
+              
+                            // When the user clicks anywhere outside of the modal, close it
+                            window.onclick = function(event) {
+                              if (event.target == modal4) {
+                                modal4.style.display = "none";
+                              }
+                            }
+              
+                            document.onkeydown = function(e) {
+                              if (e.keyCode == '27') {
+                                modal4.style.display = "none";
+                              }
+                            }
+              
+                            document.getElementById("dynamicExecutive-header").innerHTML = "Executives of {{ company_name }} as of " + date.getFullYear();
+              })
+                          </script>
+              
 
   <form  class="autocomplete m-0 " id="searchform" autocomplete="off" action="" name="searchForm">
           <div class="row" style="width:100%">
@@ -412,9 +503,14 @@ document.addEventListener('DOMContentLoaded',function(){
 
               <div id="companyname" class="text-center center">{{ company_name }}</div>
                   <div id="buttons-file-sec" >
-                      <button id="myBtn1" class="btn btn-sm ">Funds</button>
-                      <button id="myBtn2" class="btn btn-sm  ">Directors</button>
-                      <button id="myBtn3" class="btn btn-sm  ">Executives</button>
+                    <div class="row">
+                      <button id="myBtn1" class="btn btn-md col">Funds</button>
+                      <button id="myBtn2" class="btn btn-md col">Directors</button>
+                      <button id="myBtn3" class="btn btn-md col">Executives</button>
+                    </div>
+                    <div id="myBtn4_row" class="row justify-content-md-center">
+                      <button id="myBtn4" class="btn btn-md col">Customer & Suppliers</button>
+                    </div>
                   </div>
               <div style="background-color:#cccccc;font-weight:bolder">
                 <center>FILINGS</center>
