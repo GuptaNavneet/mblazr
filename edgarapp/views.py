@@ -294,9 +294,6 @@ def SearchFilingView(request):
 
                 t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
                 
-                from capitalrap.settings import BASE_DIR
-                import csv
-
                 suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
                 customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
 
