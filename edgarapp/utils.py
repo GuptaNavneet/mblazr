@@ -276,10 +276,10 @@ class TOCAlternativeExtractor(object):
         if start != -1:
             text = text[start:]
 
-        pattern = re.compile(
-            r'<a.+href="([\S]+)".*>Table of Contents.*</a>', re.IGNORECASE)
+        pattern = re.compile(r'<a.+href="([\S]+)".*>Table of Contents*</a>', re.IGNORECASE)
 
-        links = re.findall(pattern, text)
+        # links = re.findall(pattern, text)
+        links = ['#TOC']
 
         pos = -1
 
@@ -325,9 +325,9 @@ class TOCAlternativeExtractor(object):
         # import os 
         # from capitalrap.settings import STATICFILES_DIRS
         # new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
-
+# 
         # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
-        #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
+            # os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
         # with open(new_url, 'w') as file:
 
         with open(self.url, 'w') as file:
