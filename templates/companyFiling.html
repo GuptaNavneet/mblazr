@@ -406,8 +406,20 @@ document.addEventListener('DOMContentLoaded',function(){
                       {% if customers %} 
                       {% for customer in customers %}
                       <tr class="found_tr">
-                        <th class="found_td"><a style="color: black;"href="https://mblazr.com/filing/?q="{{ customer.ticker1 }}>{{ customer.company }}</a></th>
-                        <th class="found_td" style="width: 30%;"><a style="color: black;" href="https://mblazr.com/filing/?q="{{ customer.ticker1 }}>{{ customer.ticker1 }}</a></th>
+                        {% with "filing/?q="|add:customer.ticker1 as new_company_site %}
+
+                        <th class="found_td">
+                          <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
+                            {{ customer.company }}
+                          </a>
+                        </th>
+
+                        <th class="found_td" style="width: 30%;">
+                          <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
+                            {{ customer.ticker1 }}
+                          </a>
+                        </th>
+                        {% endwith %}
                       </tr>
                       {% endfor %}
                       {%else%}
@@ -431,9 +443,17 @@ document.addEventListener('DOMContentLoaded',function(){
                         {% if suppliers %}
                         {% for supplier in suppliers %}
                         <tr class="found_tr">
-                          <a href="https://mblazr.com/filing/?q={{ customer.ticker2 }}"></a>
-                            <th class="found_td"><a style="color: black;" href="https://mblazr.com/filing/?q={{ customer.ticker2 }}">{{ supplier.supplier }}</a></th>
-                            <th class="found_td" style="width: 30%;"><a style="color: black;" href="https://mblazr.com/filing/?q={{ customer.ticker2 }}">{{ supplier.ticker2 }}</a></th>
+                            <th class="found_td">
+                              <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
+                                {{ supplier.supplier }}
+                              </a>
+                            </th>
+
+                            <th class="found_td" style="width: 30%;">
+                              <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
+                                {{ supplier.ticker2 }}
+                              </a>
+                            </th>
                         </tr>
                         {% endfor %}
                         {%else%}
