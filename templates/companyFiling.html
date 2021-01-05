@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded',function(){
                       {% for customer in customers %}
                       <tr class="found_tr">
                         <th class="found_td">{{ customer.company }}</th>
-                        <th class="found_td" style="width: 30%;">{{ customer.ticker }}</th>
+                        <th class="found_td" style="width: 30%;">{{ customer.ticker1 }}</th>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -425,8 +425,8 @@ document.addEventListener('DOMContentLoaded',function(){
                       <tbody class="found_table_scrollable">
                         {% for supplier in suppliers %}
                         <tr class="found_tr">
-                          <th class="found_td">{{ supplier.company }}</th>
-                          <th class="found_td" style="width: 30%;">{{ supplier.ticker }}</th>
+                          <th class="found_td">{{ supplier.supplier }}</th>
+                          <th class="found_td" style="width: 30%;">{{ supplier.ticker2 }}</th>
                         </tr>
                         {% endfor %}
                       </tbody>
