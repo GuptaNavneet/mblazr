@@ -7,7 +7,7 @@
 
 {% block head %}
   <title>{{ company_name }} Filing</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="{% static 'js/autocomplete.js' %}"></script>
 <!--  <link href="{% static 'css/autocomplete.css' %}" rel="stylesheet">-->
 <!-- stylesheets for large screens-->
@@ -51,9 +51,9 @@
           <div id="shortcuts-mobile" >
             <div id="company_name">{{ company_name }}</div>
             <div id="short-mobile-links" >
-            <a href="#part2" title="Balance sheet"><small>Balance sheet</small></a>
-            <a href="#item1" title="Income Statement"><small>Income statement</small></a>
-            <a href="" title="Cash Flows"><small>Cash Flows</small></a>
+            <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Balance_Sheets" id="button1" target="frame" title="Balance sheet" ><small>Balance sheet</small></a>
+            <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statmnts_of_Cmprehnsve_Loss" id="button2" target="frame" title="Income Statement"><small>Income statement</small></a>
+            <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statements_of_Cash_Flows" id="button3" target="frame" title="Cash Flows" ><small>Cash Flows</small></a>
             </div>
         </div>
       </div>
@@ -389,37 +389,41 @@ document.addEventListener('DOMContentLoaded',function(){
             </script>
 
             <div id="myModal4" class="modal">
-              <div class="modal-content container">
+              <div id="modal-content-CS" class="modal-content container">
                 <span class="close">&times;</span>
-                <div id="customer_supplier_box">
+                <div class="table-responsive container" id="customer_supplier_box">
                   
-                  <div id="Customer_table" class="found_table_containers">
-                  <h3>Customer</h3>
-                  <table class = "fl-table table table-responsive table-hover">
+                  <div id="Customer_table" class="found_table_containers table-responsive">
+
+                  <div class="mobile_teable_title mt-0 row justify-content-md-center" style="padding-bottom: 5px;padding-top: 5px;">
+                    <button class="btn btn-outline-secondary cs_buttons" onclick="hide_supplier()">Customer</button>
+                    <button class="btn btn-outline-secondary cs_buttons" onclick="hide_customer()">Supllier</button> 
+                  </div>
+
+                  <h3 class="teable_title"> Customer</h3>
+                  <table id="C_table_id" class = "fl-table table table-responsive table-hover">
                     <thead>
-                      <tr class="found_tr">
-                        <th class="found_td">Customer name</th>
-                        <th class="found_td" style="width: 30%;">Ticker</th>
+                      <tr class="found_tr d-flex">
+                        <th class="found_td col">Customer name</th>
+                        <th class="found_td col" style="width: 30%;">Ticker</th>
                       </tr>
                     </thead>
                     <tbody class="found_table_scrollable">
                       {% if customers %} 
                       {% for customer in customers %}
                       <tr class="found_tr">
-                        {% with "filing/?q="|add:customer.ticker1 as new_company_site %}
 
-                        <th class="found_td">
+                        <th class="found_td col-xs">
                           <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
                             {{ customer.company }}
                           </a>
                         </th>
 
-                        <th class="found_td" style="width: 30%;">
+                        <th class="found_td col-xs" style="width: 30%;">
                           <a style="color: black;" href="{% url 'companyFiling' %}?q={{ customer.ticker1 }}&fid=all">
                             {{ customer.ticker1 }}
                           </a>
                         </th>
-                        {% endwith %}
                       </tr>
                       {% endfor %}
                       {%else%}
@@ -430,9 +434,9 @@ document.addEventListener('DOMContentLoaded',function(){
                   </table>
                   </div>
 
-                  <div id="Supplier_table" class = "found_table_containers">
-                    <h3>Supplier</h3>
-                    <table class = "fl-table table table-responsive table-hover">
+                  <div id="Supplier_table" class = "found_table_containers table-responsive">
+                    <h3 class="teable_title">Supplier</h3>
+                    <table id="S_table_id" class = "fl-table table table-responsive table-hover">
                       <thead>
                         <tr class="found_tr">
                           <th class="found_td">Supplier name</th>
@@ -473,6 +477,19 @@ document.addEventListener('DOMContentLoaded',function(){
             </style>
 
             <script type="text/javascript">
+              function hide_supplier() {
+                document.getElementById('S_table_id').style.display = 'none'
+                document.getElementById('C_table_id').style.display = 'table'
+                console.log(document.getElementById('S_table_id'))
+                console.log(document.getElementById('S_table_id').display)
+              }
+
+              function hide_customer() {
+                document.getElementById('S_table_id').style.display = 'table'
+                document.getElementById('C_table_id').style.display = 'none'
+                console.log(document.getElementById('C_table_id'))
+                console.log(document.getElementById('C_table_id').display)
+              }
               document.addEventListener('DOMContentLoaded',function(){
                             // Get the modal
                             var modal4 = document.getElementById("myModal4");

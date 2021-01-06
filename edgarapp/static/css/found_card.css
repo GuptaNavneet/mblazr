@@ -1,41 +1,98 @@
+@media 
+only screen and (max-width: 760px) {
+	.found_table_containers{
+		font-size: x-small;
+		border: none !important;
+	}
+	.container{
+		padding: 1px ;
+		margin: 1px;
+	}
+	#customer_supplier_box{
+		padding-left: 1px;
+		padding-right: 1px;
+		border: none !important;
+	}
+	.teable_title{
+		font-size: small;
+		font-weight: bold;
+		margin-top: 3px;
+		margin-bottom: 3px;
+	}
+	.found_table_containers{
+		padding-top: 1px;
+		padding-bottom: 1px;
+		overflow-x: hidden !important;
+		margin-bottom: 0px;
+	}
+	.mobile_teable_title{
+		display: block;
+	}
+	.teable_title{
+		display: none;
+	}
+	.cs_buttons{
+		width: 34% !important;
+		margin-right: 6% !important;
+		margin-left: 6% !important;
+	}
+	#S_table_id {
+		display: none;
+	}
+	.fl-table{
+		height: auto !important;
+		border: none !important;
+	}
+	#modal-content-CS{
+		height: inherit;
+	}
+}
 .container{
 	overflow: hidden;
-  }
-  #customer_supplier_box{
+}
+
+@media 
+only screen and (min-width: 760px) {
+.mobile_teable_title{
+	display: none;
+}
+.teable_title{
+	display: block;
+}
+#customer_supplier_box{
 	border: 3px solid #fff;
 	padding: 15px;
 	background-color: white;
 	display: flex;
 	height: 100%;
-  }
-  .found_table_containers{
+}
+.found_table_containers{
 	height: 100%;
-	width: 50%;
+	width: 48%;
 	float: left;
-	padding: 20px;
+	padding: 2%;
 	justify-content: center;
-  }
-  .found_table_scrollable{
+}
+.found_table_scrollable{
 	display:block;
 	height:80%;
 	overflow:auto;
-  }
-  thead, tbody tr {
+}
+thead, tbody tr {
 	  display:table;
 	  width:100%;
 	  table-layout:fixed;/* even columns width , fix width of table too*/
-  }
-
+}
 #myBtn4{
-	width: 50% !important;
+	width: 50% ;
 	margin: 0 auto;
 	margin-top: 0px;
 }
-
 #myBtn4_row {
 	width: 100%;
 	display: flex;
 	justify-content: center;
 	margin-left: 0px;
 	margin-top: 3px; 
+}
 }
