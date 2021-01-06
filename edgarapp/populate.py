@@ -1,7 +1,44 @@
-from .models import Filing, Company, Funds, Directors, Executives
-
+from edgarapp.models import Filing, Company, Funds, Directors, Executives
 import textdistance
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
 
+
+def check_for_quarterly():
+    for company in Company.objects.all():
+        for filing in company.filings.all():
+
+            url = f'https://mblazr.com/static/filings/{filing.filingpath}'
+            html = str(urlopen(url).read())
+
+            soup = BeautifulSoup(html, 'lxml')
+            date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
+
+            if date_tag:
+                text  = date_tag.text.replace('\\n', '').replace('\n', '')
+                print(f'company T: {company.ticker} filing id: {filing.id} date: {text}')
+
+            else:
+                # expresion = re.compile(r'for the ([A-Za-z]*) ended (\S*) ', re.IGNORECASE)
+                expresion = re.compile(r'For the quarterly ([A-Za-z]*) ([A-Za-z]*) ended', re.IGNORECASE)
+                text = expresion.search(html)
+                print(text)
+
+def check_filing(filing=None):
+    url = f'https://mblazr.com/static/filings/{filing.filingpath}'
+    html = str(urlopen(url).read())
+    if filing is None:
+        filing = Filing.objects.get(filingdate='2020-08-05', cik=715957)
+
+    soup = BeautifulSoup(html, 'lxml')
+    date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
+
+    if date_tag:
+        text  = date_tag.text.replace('\\n', '').replace('\n', '')
+        return(text)
+    else:
+        return('There is no tag ix:nonnumeric')
 
 def populate_filings():
 
