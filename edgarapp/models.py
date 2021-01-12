@@ -4,6 +4,19 @@
 
 from django.db import models
 
+class Quarterly(models.Model):
+
+	quarterly = models.CharField(max_length=255)
+	url = models.CharField(max_length=255)
+	cik = models.IntegerField()
+	error = models.CharField(max_length=255)
+	date = models.DateTimeField()
+	filing = models.CharField(max_length=255)
+
+	def __str__(self):
+		return self.quarterly
+	
+
 
 class Company(models.Model):
 	cik = models.CharField(max_length=255)
