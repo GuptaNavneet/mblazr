@@ -26,7 +26,7 @@ from django.views.decorators.gzip import gzip_page
 from django.views.generic import ListView, TemplateView
 
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
-from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_Rel
+from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_Rel, Quarterly
 from .utils import TOCAlternativeExtractor, Printer
 
 
@@ -227,17 +227,26 @@ def SearchFilingView(request):
     elif request.user.is_authenticated or (not request.user.is_authenticated and q_company == 'TSLA'):
         #Check query being searched
         company_search = Company.objects.filter(ticker=q_company)
+        company_quarterly = Quarterly.objects.filter(cik=company_search[0].cik)
 
         if len(company_search)>0:
             #Company is valid
             filings_for_company = Filing.objects.filter(cik=company_search[0].cik)
-
+            company_quarterlies = Quarterly.objects.filter(cik=company_search[0].cik)
             if len(filings_for_company)>0:
                 filings_list=[]
 
                 #Prepare Filings List (to didplay on left side)
+                # add quarterly periud to List
                 for myfiling in filings_for_company:
-                    filings_list.append(myfiling.dict_values())
+                    filing_dict = myfiling.dict_values()
+                    filing_quarterly = company_quarterlies.filter(filing=myfiling.filingpath)
+                    if filing_quarterly:
+                        filing_dict['quarterly_date'] = filing_quarterly[0].quarterly
+                    if not 'quarterly_date' in filing_dict:
+                        filing_dict['quarterly_date'] = '.'
+                        
+                    filings_list.append(filing_dict)
                 #We have filings for that Company
                 if q_filing == 'all':
                     filing_to_display = filings_for_company[0]
@@ -288,7 +297,6 @@ def SearchFilingView(request):
                 #if not t_o_c:
                 toc_extractor = TOCAlternativeExtractor()
 
-                # populate_new_filings()
 
                 extract_data = toc_extractor.extract(url)
 
@@ -296,7 +304,6 @@ def SearchFilingView(request):
                 
                 suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
                 customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
-
                 return render(
                     request, template_name, {
                         'object_list': object_list,
