@@ -160,6 +160,30 @@ class TOCAlternativeExtractor(object):
                             tag['id'] = 'Cons_Statements_of_Cash_Flows'
                             tree_buttons['cash'] = True
 
+                    # same checks as before but used combined inplace of consolidated
+                    if not 'balance' in tree_buttons and len([word for word in ['consolidated', 'balance', 'sheet'] if word in tag.text.lower()]) == 3:
+                        tag['id'] = 'Cons_Balance_Sheets'
+                        tree_buttons['balance'] = True
+
+                    # check tag text to consist words from list below
+                    if not 'balance' in tree_buttons and len([word for word in ['combined', 'balance', 'sheet'] if word in tag.text.lower()]) == 3:
+                        tag['id'] = 'Cons_Balance_Sheets'
+                        tree_buttons['balance'] = True
+
+                    # If there is not 'combined balance sheet' check for 'combined financial position'
+                    if not 'balance' in tree_buttons and not 'financial' in tree_buttons and len([word for word in ['combined', 'financial', 'position'] if word in tag.text.lower()]) == 3:
+                        tag['id'] = 'Cons_Balance_Sheets'
+                        tree_buttons['financial'] = True
+
+                    if len([word for word in ['combined', 'statement'] if word in tag.text.lower()]) == 2:
+                        
+                        if not 'loss' in tree_buttons and 'loss' in tag.text.lower() or 'income' in tag.text.lower():
+                            tag['id'] = 'Cons_Statmnts_of_Cmprehnsve_Loss'
+                            tree_buttons['loss'] = True
+
+                        if not 'cash' in tree_buttons and 'cash' in tag.text.lower() or 'flow' in tag.text.lower():
+                            tag['id'] = 'Cons_Statements_of_Cash_Flows'
+                            tree_buttons['cash'] = True
 
             if not tag.has_attr('style') and tag.name != 'b':
                 return False
@@ -204,6 +228,9 @@ class TOCAlternativeExtractor(object):
 
             tag_text = tag.get_text().strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
 
+            if len(tag_text) < 8:
+                tag_text = tag.parent.text.strip().replace('&nbsp;', ' ').replace('\n', '').replace('\\n', '')
+            
             tag_text_lower = tag_text.lower()
 
             split_text = tag_text_lower.split()
@@ -261,23 +288,23 @@ class TOCAlternativeExtractor(object):
 
             tag['data-print-type'] = tag_class
 
-            if self.url == 'https://mblazr.com/static/filings/1795250/2020-05-18-msgentertainmentcorp10.htm':
-                if tag_id == 'item2':
-                    tag_text = tag_text + '. Management’s Discussion and Analysis of Financial Condition and Results of Operations'
+            # if self.url == 'https://mblazr.com/static/filings/1795250/2020-05-18-msgentertainmentcorp10.htm' or 'https://mblazr.com/filing/?q=MSGE&fid=all' or 'https://mblazr.com/filing/?q=MSGE&fid=647734':
+            #     if tag_id == 'item2':
+            #         tag_text = tag_text + '. Management’s Discussion and Analysis of Financial Condition and Results of Operations'
 
-                if tag_id == 'item3':
-                    tag_text = tag_text + '. Quantitative and Qualitative Disclosures About Market Risk'
+            #     if tag_id == 'item3':
+            #         tag_text = tag_text + '. Quantitative and Qualitative Disclosures About Market Risk'
 
-                if tag_id == 'item4':
-                    tag_text = tag_text + '. Controls and Procedures'
+            #     if tag_id == 'item4':
+            #         tag_text = tag_text + '. Controls and Procedures'
 
-                if tag_id == 'item5':
-                    tag_text = tag_text + '. Legal Proceedings'
+            #     if tag_id == 'item5':
+            #         tag_text = tag_text + '. Legal Proceedings'
 
-                if tag_id == 'item6':
-                    tag_text = tag_text + '. Risk Factors'
-                if tag_id == 'item7':
-                    tag_text = tag_text + '. Exhibits'
+            #     if tag_id == 'item6':
+            #         tag_text = tag_text + '. Risk Factors'
+            #     if tag_id == 'item7':
+            #         tag_text = tag_text + '. Exhibits'
 
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
 
@@ -343,7 +370,7 @@ class TOCAlternativeExtractor(object):
         # import os 
         # from capitalrap.settings import STATICFILES_DIRS
         # new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
-#
+
         # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
         #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
         # with open(new_url, 'w') as file:
