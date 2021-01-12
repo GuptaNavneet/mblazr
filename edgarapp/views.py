@@ -244,7 +244,7 @@ def SearchFilingView(request):
                     if filing_quarterly:
                         filing_dict['quarterly_date'] = filing_quarterly[0].quarterly
                     if not 'quarterly_date' in filing_dict:
-                        filing_dict['quarterly_date'] = '.'
+                        filing_dict['quarterly_date'] = ''
                         
                     filings_list.append(filing_dict)
                 #We have filings for that Company
