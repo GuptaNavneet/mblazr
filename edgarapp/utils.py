@@ -261,6 +261,24 @@ class TOCAlternativeExtractor(object):
 
             tag['data-print-type'] = tag_class
 
+            if self.url == 'https://mblazr.com/static/filings/1795250/2020-05-18-msgentertainmentcorp10.htm':
+                if tag_id == 'item2':
+                    tag_text = tag_text + '. Management’s Discussion and Analysis of Financial Condition and Results of Operations'
+
+                if tag_id == 'item3':
+                    tag_text = tag_text + '. Quantitative and Qualitative Disclosures About Market Risk'
+
+                if tag_id == 'item4':
+                    tag_text = tag_text + '. Controls and Procedures'
+
+                if tag_id == 'item5':
+                    tag_text = tag_text + '. Legal Proceedings'
+
+                if tag_id == 'item6':
+                    tag_text = tag_text + '. Risk Factors'
+                if tag_id == 'item7':
+                    tag_text = tag_text + '. Exhibits'
+
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
 
         self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
@@ -325,9 +343,9 @@ class TOCAlternativeExtractor(object):
         # import os 
         # from capitalrap.settings import STATICFILES_DIRS
         # new_url = self.url.replace('https://mblazr.com/static/filings', STATICFILES_DIRS[0][1])
-# 
+#
         # if not new_url.split('/')[7] in os.listdir(STATICFILES_DIRS[0][1]):
-            # os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
+        #     os.mkdir(STATICFILES_DIRS[0][1] + '/' + new_url.split('/')[-2])
         # with open(new_url, 'w') as file:
 
         with open(self.url, 'w') as file:
