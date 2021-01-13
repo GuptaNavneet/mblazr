@@ -227,11 +227,10 @@ def SearchFilingView(request):
     elif request.user.is_authenticated or (not request.user.is_authenticated and q_company == 'TSLA'):
         #Check query being searched
         company_search = Company.objects.filter(ticker=q_company)
-        company_quarterly = Quarterly.objects.filter(cik=company_search[0].cik)
 
         if len(company_search)>0:
             #Company is valid
-            filings_for_company = Filing.objects.filter(cik=company_search[0].cik)
+            filings_for_company = Filing.objects.filter(cik=company_search[0].cik).exclude(filingtype ='10-Q/A')
             company_quarterlies = Quarterly.objects.filter(cik=company_search[0].cik)
             if len(filings_for_company)>0:
                 filings_list=[]
@@ -242,11 +241,15 @@ def SearchFilingView(request):
                     filing_dict = myfiling.dict_values()
                     filing_quarterly = company_quarterlies.filter(filing=myfiling.filingpath)
                     if filing_quarterly:
-                        filing_dict['quarterly_date'] = filing_quarterly[0].quarterly
+                        quarterly = filing_quarterly[0].quarterly
+                        if quarterly is None or quarterly == 'None':
+                            quarterly = ''
+                        filing_dict['quarterly_date'] = quarterly
                     if not 'quarterly_date' in filing_dict:
                         filing_dict['quarterly_date'] = ''
-                        
-                    filings_list.append(filing_dict)
+
+                    if not filing_dict['type'] == '10-Q/A':
+                        filings_list.append(filing_dict)
                 #We have filings for that Company
                 if q_filing == 'all':
                     filing_to_display = filings_for_company[0]

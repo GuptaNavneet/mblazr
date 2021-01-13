@@ -581,8 +581,8 @@ document.addEventListener('DOMContentLoaded',function(){
                     <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
                     
                     <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} </span> 
-                      <span class="print-filing" >
+                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                      <span class="print-filing" style="position: 0px !important;" style="background-position-x: 0px;">
                         <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                       </span>
                     </td>
@@ -591,8 +591,8 @@ document.addEventListener('DOMContentLoaded',function(){
                     <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
                     
                     <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} </span> 
-                      <span class="print-filing"  >
+                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                      <span  class="print-filing" style="position: 1px !important;" >
                         <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                       </span> 
                     </td>
@@ -793,6 +793,8 @@ if(window.innerWidth>'700'){
 function openPrintPortion(portion) {
     var a = window.open(printerLink + portion, '_blank');
 }  
+
+
 
 </script>
 {% endblock %}
