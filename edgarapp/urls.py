@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 
 from .views import (
     HomePageView, SearchResultsView, SearchFilingView, AboutView, FaqView, contactView,
-    login_view, register_view, logout_view, account_view, HedgeFundView, PlanView, PrinterView, AHomePageView, Adding
+    login_view, register_view, logout_view, account_view, HedgeFundView, PlanView, PrinterView, 
+    AHomePageView, Adding, ErrorListenerView
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('addreport/', AHomePageView, name='addreport'),
     path('filing/', SearchFilingView, name='companyFiling'),
     path('adding/', Adding, name='companyFiling'),
+    path('error/', ErrorListenerView, name='companyFiling'),
 
     path('', HomePageView, name='home'),
 

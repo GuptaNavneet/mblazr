@@ -90,7 +90,7 @@
                       <th onclick="sortTable(2)">VALUE$)</th>
                       <th>PUT OR CALL</th>
                     </thead>
-                    <tbody class = "tbody">
+                    <tbody style="display: block;" class = "tbody">
                       {% for fund in funds %}
                         <tr id="tr_doc">
                           <td  class="success fund">{{fund.fund}}</td>
@@ -120,6 +120,13 @@
               // When the user clicks on the button, open the modal
               btn.onclick = function() {
                 modal.style.display = "block";
+
+                table = document.getElementById('fund-table')
+                if(table.rows.length <= 1) {
+                  const xml = new XMLHttpRequest()
+                   xml.open('GET', `http://localhost:8000/error/?q=funds&url=${document.URL}`)
+                   xml.send();
+                }
               }
 
               // When the user clicks on <span> (x), close the modal
@@ -311,6 +318,12 @@ document.addEventListener('DOMContentLoaded',function(){
               // When the user clicks on the button, open the modal
               btn2.onclick = function() {
                 modal2.style.display = "block";
+                table = document.getElementById('director-table')
+                if(table.rows.length <= 1) {
+                  const xml = new XMLHttpRequest()
+                   xml.open('GET', `http://localhost:8000/error/?q=directors&url=${document.URL}`)
+                   xml.send();
+                }
               }
 
               // When the user clicks on <span> (x), close the modal
@@ -341,7 +354,7 @@ document.addEventListener('DOMContentLoaded',function(){
               <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2 class = "fund-header" style="text-decoration:underline" id = 'dynamicExecutive-header'></h2>
-                  <div class = "table-wrapper-execs">
+                  <div class = "table-wrapper-execs" id='executive-button'>
                     {% for exec in executives %}
                       {% autoescape off %}
                         {{ exec.executives }}
@@ -364,6 +377,12 @@ document.addEventListener('DOMContentLoaded',function(){
               // When the user clicks on the button, open the modal
               btn3.onclick = function() {
                 modal3.style.display = "block";
+                table = document.getElementById('executive-button')
+                if(table.childNodes.length <= 2) {
+                  const xml = new XMLHttpRequest()
+                   xml.open('GET', `http://localhost:8000/error/?q=directors&url=${document.URL}`)
+                   xml.send();
+                }
               }
 
               // When the user clicks on <span> (x), close the modal
@@ -582,7 +601,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     
                     <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
                       <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
-                      <span class="print-filing" style="position: 0px !important;" style="background-position-x: 0px;">
+                      <span class="print-filing"  >
                         <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                       </span>
                     </td>
@@ -592,7 +611,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     
                     <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
                       <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
-                      <span  class="print-filing" style="position: 1px !important;" >
+                      <span  class="print-filing"  >
                         <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                       </span> 
                     </td>

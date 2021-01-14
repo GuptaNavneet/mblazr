@@ -208,6 +208,10 @@ def SearchResultsView(request):
     #     else:
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
+def ErrorListenerView(request):
+    send_mail(request.GET['q'],request.GET['url'],settings.EMAIL_HOST_USER,[settings.EMAIL_HOST_USER])
+    return HttpResponse('')
+
 def Adding(request):
     print('\n\nyes\n\n')
     scrap_one_company(request.GET['q'])
