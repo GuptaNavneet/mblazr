@@ -1,57 +1,76 @@
-from edgarapp.models import Filing, Company, Funds, Directors, Executives
-import textdistance
+from edgarapp.models import Filing, Company, Funds, Directors, Executives, Quarterly
 from urllib.request import urlopen
+from datetime import datetime
+from time import perf_counter
 from bs4 import BeautifulSoup
+import textdistance
+import httpx
 import re
 
 
-def check_for_quarterly():
-    for company in Company.objects.all():
-        for filing in company.filings.all():
+def get_time(st=perf_counter()):
+    return perf_counter() - st
 
-            url = f'https://mblazr.com/static/filings/{filing.filingpath}'
-            html = str(urlopen(url).read())
+def is_report_tag(tag):
+    if tag.name in ['p','b','font','span'] and 90 > len(tag.text) > 13:
+        if len([word for word in ['for','quarterly','fiscal','period' 'the', 'ended'] if word in tag.text.lower()]) >= 3:
+            return True
+        else:
+            return False
+    else:
+        return False
 
-            soup = BeautifulSoup(html, 'lxml')
-            date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
-
-            if date_tag:
-                text  = date_tag.text.replace('\\n', '').replace('\n', '')
-                print(f'company T: {company.ticker} filing id: {filing.id} date: {text}')
-
-            else:
-                # expresion = re.compile(r'for the ([A-Za-z]*) ended (\S*) ', re.IGNORECASE)
-                expresion = re.compile(r'For the quarterly ([A-Za-z]*) ([A-Za-z]*) ended', re.IGNORECASE)
-                text = expresion.search(html)
-                print(text)
-
-def check_filing(filing=None):
-    url = f'https://mblazr.com/static/filings/{filing.filingpath}'
-    html = str(urlopen(url).read())
-    if filing is None:
-        filing = Filing.objects.get(filingdate='2020-08-05', cik=715957)
-
+def find_report(filingpath):
+    result = None
+    url = f'https://mblazr.com/static/filings/{filingpath}'
+    html = httpx.get(url).text
     soup = BeautifulSoup(html, 'lxml')
     date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
-
+    
     if date_tag:
-        text  = date_tag.text.replace('\\n', '').replace('\n', '')
-        return(text)
+        result  = date_tag.text
+
     else:
-        return('There is no tag ix:nonnumeric')
+        tag = soup.find(is_report_tag)
+        if tag:
+            result = tag.text
 
-def populate_filings():
+    if type(result) is str:
+        result = result.replace('\\n', '').replace('\n', '').replace('\xa0','').replace('&nbsp;','')
+        result = result.lower().split('ended')[-1]
 
-    for company in Company.objects.all():
+    return (result, url)
 
-        Filing.objects.filter(cik=company.cik, name=company.name, company=None).update(company=company)
-        
-        # company = Company.objects.filter(cik=filing.cik).first()
-        
-        # filing.company = company
-        # filing.save()
+def check_report(filing):
+    report = Quarterly.objects.filter(filing=filing.filingpath).count()
+    if report == 0:
+        result, url = find_report(filing.filingpath)
+        error = None
+        if result == None:
+            error = "couldn't find report date"
+        try:
+            Quarterly.objects.create(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
+        except Exception as e:
+            print(e)
 
-    print('DOne with Filings')
+    # Uncomment to update filings too
+    # else:
+    #     result, url = find_report(filing.filingpath)
+    #     error = None
+    #     if result == None:
+    #         error = "couldn't find report date"
+    #     try:
+    #         Quarterly.objects.filter(filing=filing.filingpath).update(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
+    #     except Exception as e:
+    #         print(e)
+    
+def scrap_one_company(ticker):
+    company = Company.objects.get(ticker=ticker)
+    filings = Filing.objects.filter(company_id=company.id)
+
+    [check_report(filing) for filing in filings if '.htm' in filing.filingpath]
+    print(' Ended')
+
 
 def populate_funds():
 

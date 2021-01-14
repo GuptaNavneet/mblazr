@@ -1,0 +1,58 @@
+<!-- home.html -->
+<!-- @radiasl for ExarNorth -->
+
+{% extends extended_template %}
+{% load static %}
+
+{% block head %}
+<title>mBlazr</title>
+<script type="text/javascript" src="{% static 'js/rautocomplete.js' %}"></script>
+
+<link href="{% static 'css/autocomplete.css' %}" rel="stylesheet" >
+<link href="{% static 'css/home-styles.css' %}" rel="stylesheet" >
+<link href="{% static 'css/homecss.css' %}" rel="stylesheet" >
+{% endblock %}
+
+
+{% block content %}
+
+
+
+    <!----------- Search container ------------->
+    <!------------------------------------------>
+    
+            <div id="search_div" >
+              <h1>Your Fundamental Analysis Tool</h1>
+              <h2 class="search-h2" >An easy way to read company filings including 10-K, 10-Q and Proxy statements.</h2>
+              <h2 class="search-h2" >Take a test drive with Tesla (TSLA)</h2>
+ 
+              <form class="autocomplete col-md-6 mx-auto" autocomplete="off" action="" name="searchForm">
+         
+                <div class="search-div0" >
+                  <div class="search-t0" ></div>
+                  {% if user.is_authenticated %}
+                  <input id="myInput" autocomplete="off" type="text"  spellcheck="false" placeholder="Search (ticker, company)" autofocus="">
+                  <div class="search-symbol-div">
+                      <div class="symbol-div">
+                          ⚲
+                      </div>
+                  </div>
+                  {% else %}
+                  <input id="myInput" autocomplete="off" type="text"  spellcheck="false" placeholder="Search (ticker, company)" autofocus="" value="TSLA">
+                  <div class="search-symbol-div">
+                      <div class="symbol-div">
+                          ⚲
+                      </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="search_results_div"></div>
+              </form>
+            </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
