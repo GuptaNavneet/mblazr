@@ -124,7 +124,7 @@
                 table = document.getElementById('fund-table')
                 if(table.rows.length <= 1) {
                   const xml = new XMLHttpRequest()
-                   xml.open('GET', `http://localhost:8000/error/?q=funds&url=${document.URL}`)
+                   xml.open('GET', `https://mblazr.com/emptybutton?q=funds&url=${document.URL}`)
                    xml.send();
                 }
               }
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 table = document.getElementById('director-table')
                 if(table.rows.length <= 1) {
                   const xml = new XMLHttpRequest()
-                   xml.open('GET', `http://localhost:8000/error/?q=directors&url=${document.URL}`)
+                   xml.open('GET', `https://mblazr.com/emptybutton?q=directors&url=${document.URL}`)
                    xml.send();
                 }
               }
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 table = document.getElementById('executive-button')
                 if(table.childNodes.length <= 2) {
                   const xml = new XMLHttpRequest()
-                   xml.open('GET', `http://localhost:8000/error/?q=directors&url=${document.URL}`)
+                   xml.open('GET', `https://mblazr.com/emptybutton?q=directors&url=${document.URL}`)
                    xml.send();
                 }
               }
