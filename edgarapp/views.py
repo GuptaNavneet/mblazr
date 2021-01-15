@@ -59,10 +59,10 @@ def AddReportHomePageView(request):
 
     extended_template = 'base.html'
 
-    if request.user.is_authenticated:
+    if request.GET.get('is_authenticated', False):
         extended_template = 'base_member.html'
 
-    if request.user.is_authenticated:# and request.user.is_superuser:
+    if request.GET.get('is_authenticated', False):# and request.GET.get('is_superuser', False):
         template_name = 'addreports.html'
         extended_template = 'base_member.html'
 
