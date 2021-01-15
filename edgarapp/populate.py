@@ -11,7 +11,7 @@ def get_time(st=perf_counter()):
     return perf_counter() - st
 
 def is_report_tag(tag):
-    if tag.name in ['p','b','font','span'] and 90 > len(tag.text) > 13:
+    if tag.name in ['p','b','font','span','div'] and 90 > len(tag.text) > 13:
         if len([word for word in ['for','quarterly','fiscal','period' 'the', 'ended'] if word in tag.text.lower()]) >= 3:
             return True
         else:
@@ -53,15 +53,15 @@ def check_report(filing):
             print(e)
 
     # Uncomment to update filings too
-    # else:
-    #     result, url = find_report(filing.filingpath)
-    #     error = None
-    #     if result == None:
-    #         error = "couldn't find report date"
-    #     try:
-    #         Quarterly.objects.filter(filing=filing.filingpath).update(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
-    #     except Exception as e:
-    #         print(e)
+    else:
+        result, url = find_report(filing.filingpath)
+        error = None
+        if result == None:
+            error = "couldn't find report date"
+        try:
+            Quarterly.objects.filter(filing=filing.filingpath).update(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
+        except Exception as e:
+            print(e)
     
 def scrap_one_company(ticker):
     company = Company.objects.get(ticker=ticker)
