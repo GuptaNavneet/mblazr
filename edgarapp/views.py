@@ -28,6 +28,7 @@ from django.views.generic import ListView, TemplateView
 from .forms import ContactForm, UsersLoginForm, UsersRegisterForm
 from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_Rel, Quarterly
 from .utils import TOCAlternativeExtractor, Printer
+from .populate import scrap_one_company
 
 
 def handler404(request, *args, **argv):
@@ -53,6 +54,17 @@ def HomePageView(request):
         {'extended_template': extended_template}
     )
 
+def AHomePageView(request):
+    template_name = 'addreports.html'
+
+    extended_template = 'base.html'
+    if request.user.is_authenticated:
+        extended_template = 'base_member.html'
+
+    return render(
+        request, template_name,
+        {'extended_template': extended_template}
+    )
 
 def SearchResultsView(request):
     # model = Company, Filing, Funds, Directors, Proxies, Executives
@@ -196,8 +208,14 @@ def SearchResultsView(request):
     #     else:
     #         return render(request, 'about.html', {'extended_template': 'base.html'})
 
+def ErrorListenerView(request):
+    send_mail(request.GET['q'],request.GET['url'],settings.EMAIL_HOST_USER,[settings.EMAIL_HOST_USER])
+    return HttpResponse('')
 
-
+def Adding(request):
+    print('\n\nyes\n\n')
+    scrap_one_company(request.GET['q'])
+    return SearchFilingView(request)
 
 @gzip_page
 def SearchFilingView(request):
