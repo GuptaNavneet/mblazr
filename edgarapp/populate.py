@@ -4,7 +4,6 @@ from datetime import datetime
 from time import perf_counter
 from bs4 import BeautifulSoup
 import textdistance
-import httpx
 import re
 
 
@@ -23,7 +22,7 @@ def is_report_tag(tag):
 def find_report(filingpath):
     result = None
     url = f'https://mblazr.com/static/filings/{filingpath}'
-    html = httpx.get(url).text
+    html = urlopen(url).read()
     soup = BeautifulSoup(html, 'lxml')
     date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
     
