@@ -1,6 +1,8 @@
 # edgarapp/views.py
 
+import re
 import itertools
+import calendar
 from datetime import datetime
 from django.contrib import messages
 
@@ -59,12 +61,9 @@ def AddReportHomePageView(request):
 
     extended_template = 'base.html'
 
-    if request.GET.get('is_authenticated', False):
+    if request.user.is_authenticated: # and request.GET.get('is_superuser', False):
         extended_template = 'base_member.html'
-
-    if request.GET.get('is_authenticated', False):# and request.GET.get('is_superuser', False):
         template_name = 'addreports.html'
-        extended_template = 'base_member.html'
 
     return render(
         request, template_name,
@@ -264,8 +263,28 @@ def SearchFilingView(request):
                     filing_quarterly = company_quarterlies.filter(filing=myfiling.filingpath)
                     if filing_quarterly:
                         quarterly = filing_quarterly[0].quarterly
-                        if quarterly is None or quarterly == 'None':
-                            quarterly = ''
+
+                        if quarterly is None:
+                           quarterly = ''
+                        else:
+                            if type(quarterly) is str:
+                                quarterly = re.sub(r'[\s;:)(\n]','', filing_quarterly[0].quarterly)
+                                if quarterly != '':
+
+                                    try:
+                                        month = re.search(r'((?:january)|(?:february)|(?:march)|(?:april)|(?:may)|(?:june)|(?:july)|(?:august)|(?:september)|(?:october)|(?:november)|(?:december))',quarterly).group()
+                                        month_number = [str(index) for index, m in enumerate(calendar.month_name) if m == month.title()][0]
+                                        month_number = month_number if len(month_number) == 2 else '0' + month_number
+                                        day_number = re.search(r'(?:[0-9]{2})',quarterly)
+                                        day_number = '__' if day_number is None else day_number.group()
+                                        year_number = re.search(r'(?:[0-9]{4})',quarterly)
+                                        year_number = '___' if year_number is None else year_number.group()
+                                        quarterly = f'{year_number}-{day_number}-{month_number}'
+                                    except Exception as e:
+                                        print(e)
+                            else:
+                                print('wtf')
+
                         filing_dict['quarterly_date'] = quarterly
                     if not 'quarterly_date' in filing_dict:
                         filing_dict['quarterly_date'] = ''

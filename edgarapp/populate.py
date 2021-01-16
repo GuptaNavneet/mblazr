@@ -66,6 +66,9 @@ def check_report(filing):
 def scrap_one_company(ticker):
     company = Company.objects.get(ticker=ticker)
     filings = Filing.objects.filter(company_id=company.id)
+    if len(list(filings)) == 0:
+        error_message = f"company {ticker} doesn't have filings in db"
+        print(error_message)
 
     [check_report(filing) for filing in filings if '.htm' in filing.filingpath]
     print(' Ended')
