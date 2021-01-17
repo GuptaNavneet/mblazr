@@ -355,15 +355,17 @@ def SearchFilingView(request):
                 
                 url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing_to_display.filingpath
 
-                #t_o_c = filing.table_of_contents.first()
+                t_o_c = filing_to_display.table_of_contents.first()
 
-                #if not t_o_c:
-                toc_extractor = TOCAlternativeExtractor()
-                isproxy = True if q_proxy else False
+                if not t_o_c:
+                    toc_extractor = TOCAlternativeExtractor()
+                    isproxy = True if q_proxy else False
+                    extract_data = toc_extractor.extract(url, isproxy)
 
-                extract_data = toc_extractor.extract(url, isproxy)
-
-                t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+                    try:
+                        t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
+                    except Exception as e:
+                        print(f"Couldn't update toc{e}")
                 
                 suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
                 customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
