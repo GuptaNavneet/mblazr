@@ -58,11 +58,11 @@ def check_report(filing):
 
     # Uncomment to update filings too
     else:
-        result, url = find_report(filing.filingpath)
-        error = None
-        if result == None:
-            error = "couldn't find report date"
         try:
+            result, url = find_report(filing.filingpath)
+            error = None
+            if result == None:
+                error = "couldn't find report date"
             Quarterly.objects.filter(filing=filing.filingpath).update(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
         except Exception as e:
             print(e)
