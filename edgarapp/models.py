@@ -140,3 +140,7 @@ class FilingsExhibits(models.Model):
 
 	def __str__(self):
 		return self.company_cik
+
+class ProxyTOC(models.Model):
+	body = models.TextField()
+	proxy = models.ForeignKey(Proxies, on_delete=models.SET_NULL,null=True, related_name='table_of_contents')

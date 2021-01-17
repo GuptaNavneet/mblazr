@@ -226,17 +226,28 @@ def SearchFilingView(request):
     extended_template = 'base_company.html'
     global filing_to_display,filings_list
     q_company = request.GET.get('q')
-    q_filing = request.GET.get('fid')
+    q_filing = request.GET.get('fid', None)
+
+    if q_filing is None:
+        q_proxy = request.GET.get('pid', None)
+    else:
+        q_proxy = None
     if q_company == '' or q_company == None:
         q_company='TSLA'
 
-    if q_filing=='' or q_filing == None:
+    if q_filing and not q_proxy and (q_filing=='' or q_filing == None):
         q_filing='all'
-    else:
+    elif not q_filing and q_proxy=='':
+        try:
+            int(q_filing)
+        except:
+            q_proxy='all'
+    elif not q_filing and not q_proxy:
         try:
             int(q_filing)
         except:
             q_filing='all'
+    
 
 
 
@@ -253,7 +264,8 @@ def SearchFilingView(request):
             #Company is valid
             filings_for_company = Filing.objects.filter(cik=company_search[0].cik).exclude(filingtype ='10-Q/A')
             company_quarterlies = Quarterly.objects.filter(cik=company_search[0].cik)
-            if len(filings_for_company)>0:
+            proxies = Proxies.objects.filter(cik=company_search[0].cik)
+            if len(filings_for_company) + len(proxies)>0:
                 filings_list=[]
 
                 #Prepare Filings List (to didplay on left side)
@@ -292,16 +304,22 @@ def SearchFilingView(request):
                     if not filing_dict['type'] == '10-Q/A':
                         filings_list.append(filing_dict)
                 #We have filings for that Company
-                if q_filing == 'all':
+                if q_filing and q_filing == 'all':
                     filing_to_display = filings_for_company[0]
-                else:
+                elif q_filing:
                     result_for_fid = Filing.objects.filter(cik=company_search[0].cik,id=q_filing)
                     if len(result_for_fid)==1:
                       filing_to_display =result_for_fid[0]
                     else:
                       #Output First Filing automaticaly
                       filing_to_display = filings_for_company[0]
-
+                elif q_proxy:
+                    proxies_to_display = Proxies.objects.filter(cik=company_search[0].cik,id=q_proxy)
+                    if len(proxies)==1:
+                      filing_to_display =proxies_to_display[0]
+                    else:
+                      #Output First Proxy automaticaly
+                      filing_to_display = proxies_to_display[0]
 
                 #Now we have filings as well as complete company info
                 company_cik = company_search[0].cik
@@ -334,6 +352,7 @@ def SearchFilingView(request):
                     #print(fetched_filing)
                     # #t_o_c = filing_to_display.table_of_contents.first()
                     # #if not t_o_c :
+                
                 url = '/mnt/filings-static/capitalrap/edgarapp/static/filings/' + filing_to_display.filingpath
 
                 #t_o_c = filing.table_of_contents.first()
@@ -363,6 +382,7 @@ def SearchFilingView(request):
                         'fid': company_cik,
                         'customers': customers,
                         'suppliers': suppliers,
+                        'proxies': proxies,
                         #'filepath': path_of_filing
 
                     })
