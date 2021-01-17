@@ -359,9 +359,9 @@ def SearchFilingView(request):
 
                 #if not t_o_c:
                 toc_extractor = TOCAlternativeExtractor()
+                isproxy = True if q_proxy else False
 
-
-                extract_data = toc_extractor.extract(url)
+                extract_data = toc_extractor.extract(url, isproxy)
 
                 t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
                 
