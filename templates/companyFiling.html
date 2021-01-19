@@ -565,87 +565,84 @@ document.addEventListener('DOMContentLoaded',function(){
       <section id="filings-section-list" >
 
         <div>
+          <div id="fixed-content-filing">
 
-          <table class=" table-hover " style="display: contents;">
-              <div id="fixed-content-filing">
-
-              <div id="companyname" class="text-center center">{{ company_name }}</div>
-                  <div id="buttons-file-sec" >
-                    <div class="row">
-                      <button id="myBtn1" class="btn btn-md col">Funds</button>
-                      <button id="myBtn2" class="btn btn-md col">Directors</button>
-                      <button id="myBtn3" class="btn btn-md col">Executives</button>
-                    </div>
-                    <div id="myBtn4_row" class="row justify-content-md-center">
-                      <button style="width: 45%;" id="myBtn4" class="btn col">Customer & Suppliers</button>
-                    </div>
+            <div id="companyname" class="text-center center">{{ company_name }}</div>
+                <div id="buttons-file-sec" >
+                  <div class="row">
+                    <button id="myBtn1" class="btn btn-md col">Funds</button>
+                    <button id="myBtn2" class="btn btn-md col">Directors</button>
+                    <button id="myBtn3" class="btn btn-md col">Executives</button>
                   </div>
-              </div>
-            <thead style="background-color:#bfbfbf;">
-
-<!--              <tr>-->
-<!--                <th><center>Type</center></th>-->
-<!--                  <th ><center>SEC Filing Reference</center></th>-->
-<!--              </tr>-->
-            </thead>
-            <tbody>
-              <div style="background-color:#cccccc;font-weight:bolder">
-                <center>FILINGS</center>
-              </div>
-              {% for filing in company_filings %}
-                <tr id="tr_doc" style="padding:3px 0px;">
-                  {% if "10-Q" in filing.type %}
-                    <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
-                    
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
-                      <span class="print-filing"  >
-                        <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
-                      </span>
-                    </td>
-
-                  {% elif "10-K" in filing.type %}
-                    <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
-                    
-                    <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                      <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
-                      <span  class="print-filing"  >
-                        <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
-                      </span> 
-                    </td>
-
-                  {% endif %}
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <table>
-            <tbody>
-              {% if proxies %}
-              <tr style="display:table-footer-group;">
-                  <div style="background-color:#cccccc;font-weight:bolder">
-                    <center>PROXIES</center>
+                  <div id="myBtn4_row" class="row justify-content-md-center">
+                    <button style="width: 45%;" id="myBtn4" class="btn col">Customer & Suppliers</button>
+                  </div>
                 </div>
-              </tr>
+            </div>
+            
+
+            <div id="filing-tables">
+
+              <table class=" table-hover " style="display: contents;">
               
-              {% for proxy in proxies %}
-              <tr id="tr_doc" style="padding:3px 0px">
-                  <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ proxy.id }}`;"><center>{{proxy.filingtype}}</center></td>
+                <tbody>
+                  <div style="background-color:#cccccc;font-weight:bolder">
+                    <center>FILINGS</center>
+                  </div>
+                  {% for filing in company_filings %}
+                    <tr id="tr_doc" style="padding:3px 0px;">
+                      {% if "10-Q" in filing.type %}
+                        <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
+                        
+                        <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                          <span class="print-filing"  style="float: right;">
+                            <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
+                          </span>
+                        </td>
+    
+                      {% elif "10-K" in filing.type %}
+                        <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
+                        
+                        <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                          <span  class="print-filing"  style="float: right;">
+                            <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
+                          </span> 
+                        </td>
+    
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <table>
+                <tbody>
+                  {% if proxies %}
+                  <tr style="display:table-footer-group;">
+                      <div style="background-color:#cccccc;font-weight:bolder">
+                        <center>PROXIES</center>
+                    </div>
+                  </tr>
                   
-                  <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                    <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&pid={{ proxy.id }}';"> Filed on  {{ proxy.filingdate }} </span> 
-                    <span class="print-filing"  >
-                      <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ proxy.id }}/full/"> print</a>
-                    </span>
-                  </td>
-
-              </tr>
-              {% endfor %}
-              {%endif%}
-            </tbody>
-          </table>
-
-
+                  {% for proxy in proxies %}
+                  <tr id="tr_doc" style="padding:3px 0px">
+                      <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ proxy.id }}`;"><center>{{proxy.filingtype}}</center></td>
+                      
+                      <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                        <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&pid={{ proxy.id }}';"> Filed on  {{ proxy.filingdate }} </span> 
+                        <span class="print-filing"  style="float: right;">
+                          <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ proxy.id }}/full/"> print</a>
+                        </span>
+                      </td>
+    
+                  </tr>
+                  {% endfor %}
+                  {%endif%}
+                </tbody>
+              </table>
+    
+            </div>
         </div>
         </section>
       </div>
