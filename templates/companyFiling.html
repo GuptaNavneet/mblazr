@@ -64,17 +64,7 @@
       <!----------- 1st column ---------------->
       <!------------ LEFT MENU ---------------->
 
-      <div class="col-md-3 section firstsec" id="1st"  style="height: 100%;">
-        <!-- <div style="position: fixed; z-index: 1;"> -->
-
-
-
-    <!-- </div> -->
-
-
-
-<!--            <button   id="btn btn-sm">Funds</button>-->
-
+      <div class="col-md-3 section firstsec grid-item" id="1st"  style="height: 100%;">
             <div id="myModal"
                  class="modal">
               <!-- Modal content -->
@@ -666,8 +656,21 @@ document.addEventListener('DOMContentLoaded',function(){
 
         <div id="report_table_cont" >CONTENT</div>
         <div id="table_filing">
-
+           {% if table_of_contents %}
             {{ table_of_contents|safe }}
+          {%else%}
+          <span>There is no context</span>
+            <script>document.getElementById("page-content-wrap").style.width='100%'</script>
+          {%endif%}
+
+          </div>
+          <div id="report_table_cont" >Exhibits</div>
+        <div id="table_filing">
+           {% if table_of_contents %}
+            {{ table_of_contents|safe }}
+          {%else%}
+          <div style="height: 60px;"><span>There is no exhibit</span></div>
+          {%endif%}
 
           </div>
         </section>
