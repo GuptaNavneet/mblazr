@@ -22,23 +22,27 @@ def is_report_tag(tag):
 def find_report(filingpath):
     result = None
     url = f'https://mblazr.com/static/filings/{filingpath}'
-    html = urlopen(url).read()
-    soup = BeautifulSoup(html, 'lxml')
-    date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
+    try:
+        html = urlopen(url).read()
+        soup = BeautifulSoup(html, 'lxml')
+        date_tag = soup.find('ix:nonnumeric', format="ixt:datemonthdayyearen")
     
-    if date_tag:
-        result  = date_tag.text
+        if date_tag:
+            result  = date_tag.text
 
-    else:
-        tag = soup.find(is_report_tag)
-        if tag:
-            result = tag.text
+        else:
+            tag = soup.find(is_report_tag)
+            if tag:
+                result = tag.text
 
-    if type(result) is str:
-        result = result.replace('\\n', '').replace('\n', '').replace('\xa0','').replace('&nbsp;','')
-        result = result.lower().split('ended')[-1]
+        if type(result) is str:
+            result = result.replace('\\n', '').replace('\n', '').replace('\xa0','').replace('&nbsp;','')
+            result = result.lower().split('ended')[-1]
 
-    return (result, url)
+        return (result, url)
+
+    except Exception as e:
+        print(e)
 
 def check_report(filing):
     report = Quarterly.objects.filter(filing=filing.filingpath).count()
@@ -54,11 +58,11 @@ def check_report(filing):
 
     # Uncomment to update filings too
     else:
-        result, url = find_report(filing.filingpath)
-        error = None
-        if result == None:
-            error = "couldn't find report date"
         try:
+            result, url = find_report(filing.filingpath)
+            error = None
+            if result == None:
+                error = "couldn't find report date"
             Quarterly.objects.filter(filing=filing.filingpath).update(quarterly=result, url=url, cik=filing.cik, error=error, date=(datetime.now()).strftime("%Y-%m-%d %H:%M:%S"), filing=filing.filingpath)
         except Exception as e:
             print(e)

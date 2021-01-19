@@ -23,14 +23,14 @@ class TOCAlternativeExtractor(object):
 
     html = ''
 
-    def extract(self, url):
+    def extract(self, url, isproxy):
         # For test mode
         # url = url.replace('/mnt/filings-static/capitalrap/edgarapp', 'https://mblazr.com')
         # html = str(urlopen(url).read())
         
         with open(url) as file:
             html = file.read()
-
+        self.isproxy = isproxy
         html = html.replace('\\n','') 
         html = html.replace('\\t','')
         html = html.replace('\t','')
@@ -190,8 +190,12 @@ class TOCAlternativeExtractor(object):
 
             style_text = tag.get('style')
 
-            if tag.name != 'b' and not (
+            if not self.isproxy and tag.name != 'b' and not (
                     'font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text):
+                return False
+
+            if self.isproxy and not (
+                    'font-weight: bold' in style_text.lower() and 'font-size: 10pt' in style_text.lower()):
                 return False
 
             split_text = tag_text.split()
@@ -365,7 +369,7 @@ class TOCAlternativeExtractor(object):
         return text
 
 
-    def save_html(self, html):
+    def save_html(self, html): # could save in db all tables
         # For test mode
         # import os 
         # from capitalrap.settings import STATICFILES_DIRS
