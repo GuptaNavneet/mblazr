@@ -44,15 +44,19 @@ class TOCAlternativeExtractor(object):
         self.html = html
 
         self.url = url
-
-        links = self._get_alternative_links(html)
-
-        links += self._get_exhibits(self.html)
+        links = ''
+        try:
+            links = self._get_alternative_links(html)
+            links += self._get_exhibits(self.html)
+        except Exception as e:
+            print(f"couldn't get links: {e}")
 
         data = Namespace(table=links)
 
-        self.save_html(self.html)
-
+        try:
+            self.save_html(self.html)
+        except Exception as e:
+            print(f"couldn't save html{e}")
         return data
 
     def _get_exhibits(self, html):
@@ -194,7 +198,7 @@ class TOCAlternativeExtractor(object):
                     'font-weight:700' in style_text or 'font-weight:bold' in style_text or 'font-weight:800' in style_text or 'font-weight:900' in style_text or 'font-weight: 700' in style_text or 'font-weight: bold' in style_text or 'font-weight: 800' in style_text or 'font-weight: 900' in style_text):
                 return False
 
-            if self.isproxy and not (
+            if self.isproxy and style_text and not (
                     'font-weight: bold' in style_text.lower() and 'font-size: 10pt' in style_text.lower()):
                 return False
 
@@ -216,7 +220,10 @@ class TOCAlternativeExtractor(object):
 
         global tree_buttons
         tree_buttons = {}
-        headings = modified_soup.find_all(is_bold)
+        try:
+            headings = modified_soup.find_all(is_bold)
+        except Exception as e:
+            print(e)
 
         num_of_headings = len(list(headings))
 
@@ -292,24 +299,6 @@ class TOCAlternativeExtractor(object):
 
             tag['data-print-type'] = tag_class
 
-            # if self.url == 'https://mblazr.com/static/filings/1795250/2020-05-18-msgentertainmentcorp10.htm' or 'https://mblazr.com/filing/?q=MSGE&fid=all' or 'https://mblazr.com/filing/?q=MSGE&fid=647734':
-            #     if tag_id == 'item2':
-            #         tag_text = tag_text + '. Management’s Discussion and Analysis of Financial Condition and Results of Operations'
-
-            #     if tag_id == 'item3':
-            #         tag_text = tag_text + '. Quantitative and Qualitative Disclosures About Market Risk'
-
-            #     if tag_id == 'item4':
-            #         tag_text = tag_text + '. Controls and Procedures'
-
-            #     if tag_id == 'item5':
-            #         tag_text = tag_text + '. Legal Proceedings'
-
-            #     if tag_id == 'item6':
-            #         tag_text = tag_text + '. Risk Factors'
-            #     if tag_id == 'item7':
-            #         tag_text = tag_text + '. Exhibits'
-
             new_soup += f"<a href='#{tag_id}' class='{tag_class}-link' data-print-type='{tag_class}'>{tag_text}</a>"
 
         self.html = modified_soup.body.prettify(formatter='html').replace('[[REMOVED_TABLE]]', default_table)
@@ -327,7 +316,6 @@ class TOCAlternativeExtractor(object):
 
         pattern = re.compile(r'<a.+href="([\S]+)".*>Table of Contents*</a>', re.IGNORECASE)
 
-        # links = re.findall(pattern, text)
         links = ['#TOC']
 
         pos = -1
