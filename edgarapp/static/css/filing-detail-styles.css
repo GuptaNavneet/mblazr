@@ -243,6 +243,7 @@
        top:4.5vh;
        padding:0px;
        margin:0px;
+       width: 100%;
     }
     .firstsec{
 
@@ -437,20 +438,19 @@
     }
     #report_table_cont{
         position:absolute;
-
         width:100%;
         left:0%;
-         padding:3px;
-         margin:0px;
-            background-color: #ddd;
-    color: #444;
-    text-align: center;
-    height: 25px;
-    vertical-align: middle;
-    line-height: 25px;
-    font-weight: 600;
-    text-transform: uppercase;
-     font-size:small!important;
+        padding:3px;
+        margin:0px;
+        background-color: #ddd;
+        color: #444;
+        text-align: center;
+        height: 25px;
+        vertical-align: middle;
+        line-height: 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size:small!important;
     }
     .exhibit-header{
             background-color: #ddd;
@@ -500,10 +500,11 @@
     text-align:left;
     margin-left:10px;
     cursor:pointer;
-    padding:0px 0px 0px 20px;
+    padding:0px 0px 0px 10px;
     color:black;
     font-family:Tahoma,Geneva,sans-serif;
-    width:80%;
+    font-size: 12px;
+    width:90%;
     border-color:black;
     border-top:1px solid black;
     border-bottom:1px solid black;

@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded',function(){
                         <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
                         
                         <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">{{ filing.quarterly_date }} Filed on  {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> Filed on  {{ filing.date }} for the Quarter ended {{ filing.quarterly_date }}</span> 
                           <span class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                           </span>
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded',function(){
                         <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
                         
                         <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> {{ filing.quarterly_date }} Filed  on {{ filing.date }} &nbsp&nbsp&nbsp&nbsp&nbsp </span> 
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">  Filed  on {{ filing.date }} for the Fiscal year ended {{ filing.quarterly_date }}</span> 
                           <span  class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                           </span> 
@@ -619,7 +619,7 @@ document.addEventListener('DOMContentLoaded',function(){
                   <tr id="tr_doc" style="padding:3px 0px">
                       <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ proxy.id }}`;"><center>{{proxy.filingtype}}</center></td>
                       
-                      <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                      <td class="filedate p-0" style="width: 85% !important;" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
                         <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&pid={{ proxy.id }}';"> Filed on  {{ proxy.filingdate }} </span> 
                         <span class="print-filing"  style="float: right;">
                           <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ proxy.id }}/full/"> print</a>
@@ -658,8 +658,6 @@ document.addEventListener('DOMContentLoaded',function(){
         <div id="table_filing">
             {{ table_of_contents|safe }}
         </div>
-
-        
         </section>
 
 
