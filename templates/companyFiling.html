@@ -584,8 +584,12 @@ document.addEventListener('DOMContentLoaded',function(){
                       {% if "10-Q" in filing.type %}
                         <td class="p-0" id = "qbg"  onclick="window.location.href = `{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}`;"><center>10-Q</center></td>
                         
-                        <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> Filed on  {{ filing.date }} for the Quarter ended {{ filing.quarterly_date }}</span> 
+                        <td style="height: 45px !important;" class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                          {%if filing.quarterly_date%}
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> Filed on  {{ filing.date }} <br /> For the Quarter ended {{ filing.quarterly_date }}</span> 
+                          {%else%}
+                          <span  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> Filed on  {{ filing.date }} </span> 
+                          {%endif%}
                           <span class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                           </span>
@@ -594,8 +598,12 @@ document.addEventListener('DOMContentLoaded',function(){
                       {% elif "10-K" in filing.type %}
                         <td class="p-0" id = "kbg" onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"><center>10-K</center></td>
                         
-                        <td class="filedate p-0" onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
-                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">  Filed  on {{ filing.date }} for the Fiscal year ended {{ filing.quarterly_date }}</span> 
+                        <td class="filedate p-0" style="height: 45px !important;"  onmouseout="this.querySelector('.print-filing').style.display = 'none'" onmouseover="this.querySelector('.print-filing').style.display = 'inline-block'"  >
+                          {%if filing.quarterly_date%}
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">  Filed  on {{ filing.date }} <br /> For the Fiscal year ended {{ filing.quarterly_date }}</span> 
+                          {%else%}
+                          <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">  Filed  on {{ filing.date }} </span> 
+                          {%endif%}
                           <span  class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
                           </span> 
