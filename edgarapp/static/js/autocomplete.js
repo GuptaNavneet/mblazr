@@ -29,7 +29,7 @@ $(document).ready(function () {
                 /*create a DIV element for each matching element:*/
                 b = document.createElement("DIV");
                 /*make the matching letters bold:*/
-                b.innerHTML = "<a class='link' href='/filing/?q=" + arr[i].ticker + "&fid=all'><span>" + arr[i].ticker + "</span> - " + arr[i].name + "</a>";
+                b.innerHTML = "<a class='link' href='/filing/?q=" + arr[i].ticker + "&fid=all'><span>" + arr[i].ticker.toUpperCase() + "</span> - " + arr[i].name.toUpperCase() + "</a>";
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + arr[i].name + "'>";
                 currentTicker = arr[i].ticker
@@ -84,11 +84,13 @@ $(document).ready(function () {
             if (currentFocus < 0) currentFocus = (x.length - 1);
             /*add class "autocomplete-active":*/
             x[currentFocus].classList.add("autocomplete-active");
+            x[currentFocus].style.backgroundColor = '#72c1fb';
         }
         function removeActive(x) {
             /*a function to remove the "active" class from all autocomplete items:*/
             for (var i = 0; i < x.length; i++) {
                 x[i].classList.remove("autocomplete-active");
+                x[i].style.backgroundColor = '#ffffff';
             }
         }
         function closeAllLists(elmnt) {
