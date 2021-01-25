@@ -500,11 +500,10 @@
     text-align:left;
     margin-left:10px;
     cursor:pointer;
-    padding:0px 0px 0px 10px;
+    padding:0px 0px 0px 20px;
     color:black;
     font-family:Tahoma,Geneva,sans-serif;
-    font-size: 12px;
-    width:90%;
+    width:80%;
     border-color:black;
     border-top:1px solid black;
     border-bottom:1px solid black;
