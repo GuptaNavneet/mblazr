@@ -29,7 +29,8 @@ $(document).ready(function () {
                 /*create a DIV element for each matching element:*/
                 b = document.createElement("DIV");
                 /*make the matching letters bold:*/
-                b.innerHTML = "<a class='link' href='/filing/?q=" + arr[i].ticker + "&fid=all'><span>" + arr[i].ticker.toUpperCase() + "</span> - " + arr[i].name.toUpperCase() + "</a>";
+                b.innerHTML = "<a class='link' href='/filing/?q=" + arr[i].ticker + "&fid=all'><span>" + arr[i].ticker.toUpperCase() + "</span> - " + arr[i].name.toUpperCase()
+                 + "</a>";
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + arr[i].name + "'>";
                 currentTicker = arr[i].ticker
@@ -54,6 +55,7 @@ $(document).ready(function () {
         inp.addEventListener("keydown", function (e) {
             var x = document.getElementById(this.id + "autocomplete-list");
             if (x) x = x.getElementsByTagName("div");
+            if (x.length == 1) {e.preventDefault();}
             if (e.keyCode == 40) {
                 /*If the arrow DOWN key is pressed,
                 increase the currentFocus variable:*/
@@ -72,6 +74,10 @@ $(document).ready(function () {
                 if (currentFocus > -1) {
                     /*and simulate a click on the "active" item:*/
                     if (x) x[currentFocus].click();
+                }
+                if (x.length == 1) {
+                    /*and simulate a click on the "active" item:*/
+                    if (x) x[0].click();
                 }
             }
         });
