@@ -1,6 +1,7 @@
 # edgarapp/views.py
 
 import re
+import time
 import itertools
 import calendar
 from datetime import datetime
@@ -32,6 +33,8 @@ from .models import Company, Directors, Executives, Filing, Funds, Proxies, CS_R
 from .utils import TOCAlternativeExtractor, Printer
 from .populate import scrap_one_company
 
+def give_time(start):
+    return(time.perf_counter() - start)
 
 def handler404(request, *args, **argv):
     extended_template = 'base.html'
@@ -285,22 +288,16 @@ def SearchFilingView(request):
 
                                     try:
                                         month = re.search(r'((?:january)|(?:february)|(?:march)|(?:april)|(?:may)|(?:june)|(?:july)|(?:august)|(?:september)|(?:october)|(?:november)|(?:december))',quarterly).group()
-                                        month_number = [str(index) for index, m in enumerate(calendar.month_name) if m == month.title()][0]
-                                        month_number = month_number if len(month_number) == 2 else '0' + month_number
                                         day_number = re.search(r'(?:[0-9]{2})',quarterly)
                                         day_number = '__' if day_number is None else day_number.group()
                                         year_number = re.search(r'(?:[0-9]{4})',quarterly)
                                         year_number = '___' if year_number is None else year_number.group()
-                                        quarterly = f'{year_number}-{day_number}-{month_number}'
+                                        quarterly = f'{month.title()} {day_number}, {year_number}'
                                     except Exception as e:
                                         print(e)
-                            else:
-                                print('wtf')
-
-                        filing_dict['quarterly_date'] = quarterly
+                    filing_dict['quarterly_date'] = quarterly
                     if not 'quarterly_date' in filing_dict:
                         filing_dict['quarterly_date'] = ''
-
                     if not filing_dict['type'] == '10-Q/A':
                         filings_list.append(filing_dict)
                 #We have filings for that Company
@@ -325,12 +322,10 @@ def SearchFilingView(request):
                 company_cik = company_search[0].cik
                 company_name = company_search[0].name
                 company_ticker =company_search[0].ticker
-
                 #Get directors,executives,funds
                 funds = Funds.objects.filter(company=company_name)[:100]
                 directors = Directors.objects.filter(company=company_name)
                 executives = Executives.objects.filter(company=company_name)
-
                 object_list=[]
 
                 #Fetch file and prepare TOC
@@ -358,14 +353,17 @@ def SearchFilingView(request):
                 t_o_c = filing_to_display.table_of_contents.first()
 
                 if not t_o_c:
+                    t_o_c=''
                     toc_extractor = TOCAlternativeExtractor()
                     isproxy = True if q_proxy else False
                     extract_data = toc_extractor.extract(url, isproxy)
 
-                    try:
-                        t_o_c = filing_to_display.table_of_contents.create(body=extract_data.table)
-                    except Exception as e:
-                        print(f"Couldn't update toc{e}")
+                    t_o_c= extract_data[0]
+                    if extract_data[1] is not None:
+                        try:
+                            filing_to_display.table_of_contents.create(body=extract_data[0])
+                        except Exception as e:
+                            print(f"Couldn't update toc{e}")
                 
                 suppliers = [ suplier for suplier in CS_Rel.objects.filter(ticker1=company_ticker) if suplier.supplier ]
                 customers = [ customer for customer in CS_Rel.objects.filter(ticker2=company_ticker) if customer.company ]
