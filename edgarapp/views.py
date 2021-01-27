@@ -250,7 +250,7 @@ def SearchFilingView(request):
             int(q_filing)
         except:
             q_filing='all'
-    
+
 
 
 
@@ -265,11 +265,12 @@ def SearchFilingView(request):
 
         if len(company_search)>0:
             #Company is valid
-            filings_for_company = Filing.objects.filter(cik=company_search[0].cik).exclude(filingtype ='10-Q/A')
+            filings_for_company = Filing.objects.filter(cik=company_search[0].cik).exclude(filingtype ='10-Q/A').filter(filingpath__contains='.htm')
             company_quarterlies = Quarterly.objects.filter(cik=company_search[0].cik)
             proxies = Proxies.objects.filter(cik=company_search[0].cik)
             if len(filings_for_company) + len(proxies)>0:
                 filings_list=[]
+                quarterly = ''
 
                 #Prepare Filings List (to didplay on left side)
                 # add quarterly periud to List
@@ -359,6 +360,7 @@ def SearchFilingView(request):
                     extract_data = toc_extractor.extract(url, isproxy)
 
                     t_o_c= extract_data[0]
+                    t_o_c = t_o_c.body if hasattr(t_o_c, 'body') else t_o_c
                     if extract_data[1] is not None:
                         try:
                             filing_to_display.table_of_contents.create(body=extract_data[0])
