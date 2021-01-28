@@ -26,9 +26,9 @@
          <div class="col-md-6  center-btn">
              <span id="title">{{ company_name }} Earnings {{ current_filing.filingdate }}</span>
         <span id="shortcts">
-          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Balance_Sheets" id="button1" target="frame" title="Balance sheet" ><small>Balance sheet</small></a>
-          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statmnts_of_Cmprehnsve_Loss" id="button2" target="frame" title="Income Statement"><small>Income statement</small></a>
-          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statements_of_Cash_Flows" id="button3" target="frame" title="Cash Flows" ><small>Cash Flows</small></a>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Balance_Sheets" id="button1" target="frame" title="Balance sheet" ><small>Balance Sheet</small></a>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statmnts_of_Cmprehnsve_Loss" id="button2" target="frame" title="Income Statement"><small>Income Statement</small></a>
+          <a href="{% static 'filings/' %}{{ current_filing.filingpath }}#Cons_Statements_of_Cash_Flows" id="button3" target="frame" title="Cash Flows" ><small>Cash Flow</small></a>
         </span>
        
       </div>
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
            </div>
         </form>
-      <section id="filings-section-list" >
+      <section style="overflow-x: hidden;" id="filings-section-list" >
 
         <div>
           <div id="fixed-content-filing">
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     <button id="myBtn3" class="btn btn-md col">Executives</button>
                   </div>
                   <div id="myBtn4_row" class="row justify-content-md-center">
-                    <button style="width: 45%;" id="myBtn4" class="btn col">Customer & Suppliers</button>
+                    <button style="width: 45%;" id="myBtn4" class="btn col">Customers & Suppliers</button>
                   </div>
                 </div>
             </div>

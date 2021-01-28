@@ -270,7 +270,7 @@ def SearchFilingView(request):
             proxies = Proxies.objects.filter(cik=company_search[0].cik)
             if len(filings_for_company) + len(proxies)>0:
                 filings_list=[]
-                quarterly = ''
+                quarterly = None
 
                 #Prepare Filings List (to didplay on left side)
                 # add quarterly periud to List
@@ -293,7 +293,7 @@ def SearchFilingView(request):
                                         day_number = '__' if day_number is None else day_number.group()
                                         year_number = re.search(r'(?:[0-9]{4})',quarterly)
                                         year_number = '___' if year_number is None else year_number.group()
-                                        quarterly = f'{month.title()} {day_number}, {year_number}'
+                                        quarterly = f'{month.title()[:3]} {day_number}, {year_number}'
                                     except Exception as e:
                                         print(e)
                     filing_dict['quarterly_date'] = quarterly
