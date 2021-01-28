@@ -9,6 +9,7 @@ $(document).ready(function () {
         inp.addEventListener("input", function (e) {
             $('.autocomplete').removeClass('h-300')
             var a, b, i, val = this.value;
+            
             /*close any already open lists of autocompleted values*/
             closeAllLists();
             if (!val) { return false; }
@@ -37,7 +38,7 @@ $(document).ready(function () {
                 /*execute a function when someone clicks on the item value (DIV element):*/
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
+                    // inp.value = this.getElementsByTagName("input")[0].value;
                     this.getElementsByClassName('link')[0].click()
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
@@ -49,13 +50,17 @@ $(document).ready(function () {
                 a.classList.remove('hidden');
                 $('.autocomplete').addClass('h-300')
             }
+            // console.log(val.toUpperCase())
+            // console.log(e.value)
+            document.getElementById("myInput").value = val.toUpperCase()
         });
 
         /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function (e) {
             var x = document.getElementById(this.id + "autocomplete-list");
+
             if (x) x = x.getElementsByTagName("div");
-            if (x.length == 1) {e.preventDefault();}
+            // if (x.length == 1) {e.preventDefault();}
             if (e.keyCode == 40) {
                 /*If the arrow DOWN key is pressed,
                 increase the currentFocus variable:*/
