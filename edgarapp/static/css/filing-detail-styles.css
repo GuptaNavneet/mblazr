@@ -24,7 +24,7 @@
     #filing-quick-navbar-large div{
         color:white;
         font-weight:bolder;
-        background-color:rgb(33, 150, 243);
+        background-color: #324960;
         font-family:Tahoma,Geneva,sans-serif;
         font-size:10pt;
         margin:0px ;
@@ -240,7 +240,7 @@
         height:95vh;
         left:0px;
         overflow:hidden;
-       top:4.5vh;
+       top:3vh;
        padding:0px;
        margin:0px;
        width: 100%;
@@ -349,7 +349,7 @@
     margin: 0;
     font-weight:bolder;
     border-bottom: 1px solid black;
-    background-color:#d9d9d9;
+    background-color:#4FC3A1;
     }
  #table_filing a{
      font-family: Tahoma,Geneva,sans-serif;
@@ -442,7 +442,7 @@
         left:0%;
         padding:3px;
         margin:0px;
-        background-color: #ddd;
+        background-color: #4FC3A1;
         color: #444;
         text-align: center;
         height: 25px;

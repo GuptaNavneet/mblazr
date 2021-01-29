@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     <button class="btn btn-outline-secondary cs_buttons" onclick="hide_customer()">Supplier</button> 
                   </div>
 
-                  <h3 class="teable_title"> Customer</h3>
+                  <h3 class="teable_title"> Customers</h3>
                   <table id="C_table_id" class = "fl-table table table-responsive table-hover">
                     <thead>
                       <tr class="found_tr d-flex">
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded',function(){
                   </div>
 
                   <div id="Supplier_table" class = "found_table_containers table-responsive">
-                    <h3 class="teable_title">Supplier</h3>
+                    <h3 class="teable_title">Suppliers</h3>
                     <table id="S_table_id" class = "fl-table table table-responsive table-hover">
                       <thead>
                         <tr class="found_tr">
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded',function(){
             <div id="companyname" class="text-center center">{{ company_name }}</div>
                 <div id="buttons-file-sec" >
                   <div class="row">
-                    <button id="myBtn1" class="btn btn-md col">Funds</button>
+                    <button id="myBtn1" class="btn btn-md col">Top Shareholders</button>
                     <button id="myBtn2" class="btn btn-md col">Directors</button>
                     <button id="myBtn3" class="btn btn-md col">Executives</button>
                   </div>
@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded',function(){
               <table class=" table-hover " style="display: contents;">
               
                 <tbody>
-                  <div style="background-color:#cccccc;font-weight:bolder">
+                  <div style="background-color:#4FC3A1;font-weight:bolder">
                     <center>FILINGS</center>
                   </div>
                   {% for filing in company_filings %}
@@ -590,9 +590,10 @@ document.addEventListener('DOMContentLoaded',function(){
                           {%else%}
                           <span  onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';"> Filed on  {{ filing.date }} </span> 
                           {%endif%}
+                          <!--
                           <span class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
-                          </span>
+                          </span> -->
                         </td>
     
                       {% elif "10-K" in filing.type %}
@@ -604,9 +605,10 @@ document.addEventListener('DOMContentLoaded',function(){
                           {%else%}
                           <span onclick="window.location.href = '{% url 'companyFiling' %}?q={{ company_ticker }}&fid={{ filing.id }}';">  Filed  on {{ filing.date }} </span> 
                           {%endif%}
+                          <!--
                           <span  class="print-filing"  style="float: right;">
                             <a target="_blank" style="color:white;text-decoration:none" href="/printer/{{ filing.id }}/full/"> print</a>
-                          </span> 
+                          </span> -->
                         </td>
     
                       {% endif %}
@@ -618,7 +620,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 <tbody>
                   {% if proxies %}
                   <tr style="display:table-footer-group;">
-                      <div style="background-color:#cccccc;font-weight:bolder">
+                      <div style="background-color:#4FC3A1;font-weight:bolder">
                         <center>PROXIES</center>
                     </div>
                   </tr>
