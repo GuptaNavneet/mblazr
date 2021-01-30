@@ -23,7 +23,7 @@
      margin:0px!important;
        overflow:hidden;
         z-index:50;
-         background-color:rgb(33, 150, 243);
+         background-color:#324960;
          overflow:hidden;
 
    }
@@ -32,7 +32,7 @@
      border:none;
      color:white;
      text-align:center;
-      background-color:rgb(33, 150, 243);
+      background-color:#324960;
         font-family:Tahoma,Geneva,sans-serif;
         font-weight:bold;
         font-size:10pt;
