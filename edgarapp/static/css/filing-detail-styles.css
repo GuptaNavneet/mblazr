@@ -248,7 +248,7 @@
     .firstsec{
 
         position:relative;
-        top:1vh;
+        /*top:1vh;*/
         padding-left:0px;
         border-right:1px solid #2d5986;
         min-width:25vw;
@@ -597,7 +597,7 @@
      position:relative;
      overflow:scroll;
      padding:5px 60px;
-     top:1vh;
+     /*top:1vh;*/
       overflow-y:scroll;
       height:95vh;
       max-height:95vh!important;
